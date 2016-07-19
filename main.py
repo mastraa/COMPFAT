@@ -11,6 +11,7 @@ sys.path.append('librerie')
 
 
 import countingmethod as cm
+import predictionMethod as pm
 #import numpy as np
 #import pyqtgraph as pg
 import pygubu
@@ -32,7 +33,8 @@ except:
 #cicli=rainflow.cycles(pv)
 
 
-
+m,q=pm.rect2([0,2],[8,6])
+x=pm.xRect(4,m,q)
 
 
 class lifePredict:
@@ -44,6 +46,7 @@ class lifePredict:
         mainwindow = builder.get_object('mainWindow', master)
 
         builder.connect_callbacks(self)
+        
 """
 if __name__ == '__main__':
     root = tk.Tk()

@@ -7,9 +7,11 @@ Last release 14/07/2016
 
 import sqlite3
 
+
 name = "fatData.db"
 connection = sqlite3.connect(name)
 cursor = connection.cursor()
+
 
 cursor.execute("SELECT * FROM matGroup") 
 print("fetchall:")
