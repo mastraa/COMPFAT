@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-
-
-
 Author: Andrea Mastrangelo
 
-Lasto release 14/07/2016
+Last release 14/07/2016
 """
-import numpy as np
+#import numpy as np
 
 __version__="0.0.1"
 __s__=[-2,1,-3,5,-1,3,-4,4,-2]
+#__x__ = np.linspace(0,4,20)
+#__spectrum__= 0.2 + 0.5*np.sin(__x__) + 0.2*np.cos(10*__x__) + 0.2*np.sin(4*__x__)
+
 
 def rainflow(s):#s = serie of peak and valley
     """
@@ -21,8 +21,8 @@ def rainflow(s):#s = serie of peak and valley
     """
     i=0
     cycles=[]
-    if isinstance(s,np.ndarray):
-        s=s.tolist()
+    #if isinstance(s,np.ndarray):
+    #    s=s.tolist()
     while i<len(s)-1:#-1 because index increment is later
         i=i+1
         if i>1:
@@ -110,8 +110,8 @@ def simplyRainflow(serie):
         s=rearrangeMax(serie)
     else:
         s=serie
-    if isinstance(s,np.ndarray):
-        s=s.tolist()
+    #if isinstance(s,np.ndarray):
+    #    s=s.tolist()
     i=0
     cycles=[]
     while i<len(s)-1:#-1 because index increment is later
