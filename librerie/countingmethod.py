@@ -4,7 +4,7 @@ Author: Andrea Mastrangelo
 
 Last release 14/07/2016
 """
-#import numpy as np
+import numpy as np
 
 __version__="0.0.1"
 __s__=[-2,1,-3,5,-1,3,-4,4,-2]
@@ -25,6 +25,8 @@ def reverses(history):
             while( i<len(history) and history[i]>=history[i-1]):
                 i=i+1
             serie.append(history[i-1])
+        if i>len(history):#otherwise it will raise an index exception
+            break
         if history[i]<history[i-1]:
             while ( i<len(history) and history[i]<history[i-1]):
                 i=i+1
@@ -33,7 +35,7 @@ def reverses(history):
     
 def histo(s):
     """
-    Calculation of cumulative histograms of ranges
+    Calculation of cumulative histograms of ranges divided by range
     INPUT: ranges array
     OUTPUT: array made by two array with ranges and relative frequency
             first higher range value
@@ -53,6 +55,37 @@ def histo(s):
         temp_f.append(n)
     return [temp_v,temp_f]
     
+def histoMean(s):
+    """
+    Calculation of cumulative histograms of ranges divided by range and mean value
+    INPUT: ranges array
+    OUTPUT: array made by two array with ranges and relative frequency
+            first higher range value
+    """
+    temp=[]
+    temp_v=[]
+    for i in range (0,len(s)):
+        temp.append(s[i][0])
+    temp=list(set(temp))
+    temp.sort()
+    temp.reverse()
+    for item in temp:
+        temp_v.append([item,[]])
+    flag=1
+    for value in s:
+        for item in temp_v:
+            flag=1
+            if value[0]==item[0]:#if range value are egual
+                for char in item[1]:
+                    if value[2]==char[1]:#if mean values are egual
+                        char[0]=char[0]+value[1]#increment cycles value
+                        flag=0#get down flag
+                if flag:#if mean values yet to be add
+                    item[1].append([value[1],value[2]])
+    return temp_v
+        
+    
+    
 def rearrangeMax(serie):
     """
     Return the serie rearranged starting with max value
@@ -66,11 +99,15 @@ def rainflow(s):#s = serie of peak and valley
     INPUT the serie of peak and valley as a vector
     OUTPUT three dimension array with range, cycles number and mean value
     mean value from "nonmandatory infornation" of E1049-85
+    
+    [value, cicles, mean]    
+    
+    TODO: understand why it modify INPUT array!!!
     """
     i=0
     cycles=[]
-    #if isinstance(s,np.ndarray):
-    #    s=s.tolist()
+    if isinstance(s,np.ndarray):
+        s=s.tolist()
     while i<len(s)-1:#-1 because index increment is later
         i=i+1
         if i>1:
@@ -102,8 +139,8 @@ def simplyRainflow(serie):
         s=rearrangeMax(serie)
     else:
         s=serie
-    #if isinstance(s,np.ndarray):
-    #    s=s.tolist()
+    if isinstance(s,np.ndarray):
+        s=s.tolist()
     i=0
     cycles=[]
     while i<len(s)-1:#-1 because index increment is later
