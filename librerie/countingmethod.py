@@ -13,9 +13,10 @@ __s__=[-2,1,-3,5,-1,3,-4,4,-2]
 
 def reverses(history):
     """
-    The function converts the spectrum in an array with only peaks and valleys
+    The function converts the spectrum in an array with only maximum and
+    minimum values
     INPUT array of charge
-    OUTPUT array with peaks and valleys
+    OUTPUT array with maximum and minimum values
     """
     serie=[]
     serie.append(history[0])
@@ -25,7 +26,7 @@ def reverses(history):
             while( i<len(history) and history[i]>=history[i-1]):
                 i=i+1
             serie.append(history[i-1])
-        if i>len(history):#otherwise it will raise an index exception
+        if i>=len(history):#otherwise it will raise an index exception
             break
         if history[i]<history[i-1]:
             while ( i<len(history) and history[i]<history[i-1]):
@@ -43,14 +44,14 @@ def histo(s):
     temp_v=[] #values
     temp_f=[] #frequency
     for i in range (0,len(s)):
-        temp_v.append(s[i][0])
+        temp_v.append(round(s[i][0],4))
     temp_v=list(set(temp_v))
     temp_v.sort()
     temp_v.reverse()
     for item in temp_v:
         n=0
         for value in s:
-            if value[0]==item:
+            if round(value[0],4)==item:
                 n=n+value[1]
         temp_f.append(n)
     return [temp_v,temp_f]
@@ -65,7 +66,7 @@ def histoMean(s):
     temp=[]
     temp_v=[]
     for i in range (0,len(s)):
-        temp.append(s[i][0])
+        temp.append(round(s[i][0],4))
     temp=list(set(temp))
     temp.sort()
     temp.reverse()
@@ -75,13 +76,13 @@ def histoMean(s):
     for value in s:
         for item in temp_v:
             flag=1
-            if value[0]==item[0]:#if range value are egual
+            if round(value[0],4)==item[0]:#if range value are egual
                 for char in item[1]:
-                    if value[2]==char[1]:#if mean values are egual
+                    if round(value[2],4)==char[1]:#if mean values are egual
                         char[0]=char[0]+value[1]#increment cycles value
                         flag=0#get down flag
                 if flag:#if mean values yet to be add
-                    item[1].append([value[1],value[2]])
+                    item[1].append([value[1],round(value[2],4)])
     return temp_v
         
     
@@ -112,21 +113,21 @@ def rainflow(s):#s = serie of peak and valley
         i=i+1
         if i>1:
             #create ranges
-            X=abs(s[i]-s[i-1])
-            Y=abs(s[i-1]-s[i-2])
+            X=round(abs(s[i]-s[i-1]),4)
+            Y=round(abs(s[i-1]-s[i-2]),4)
             #print (i,X,Y)
             #print(s)
             if X>=Y:
                 if i == 2: #range Y contains the starting point
-                    cycles.append([Y,0.5,(s[i-1]+s[i-2])/2])
+                    cycles.append([Y,0.5,round((s[i-1]+s[i-2])/2,4)])
                     del(s[0]) #deleting starting point
                     i=i-1 #cause to reducing s lenght
                 else:
-                    cycles.append([Y,1.0,(s[i-1]+s[i-2])/2])
+                    cycles.append([Y,1.0,round((s[i-1]+s[i-2])/2,4)])
                     del(s[i-2:i]) #discarding Y peak and valley
                     i=i-3 #case to reducing s lenght of 2, but not reread (see position of i increment)
     for i in range (1,len(s)):
-        cycles.append([abs(s[i]-s[i-1]),0.5,(s[i]+s[i-1])/2])
+        cycles.append([abs(s[i]-s[i-1]),0.5,round((s[i]+s[i-1])/2,4)])
     return cycles 
 
 def simplyRainflow(serie):

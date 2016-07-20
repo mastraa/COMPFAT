@@ -9,6 +9,7 @@ File manipolation library
 
 from openpyxl import load_workbook
 import matplotlib.pyplot as plt
+from decimal import *
 #from openpyxl.worksheet.read_only import ReadOnlyWorksheet
 
 
@@ -23,6 +24,4 @@ def readF(nameFile):
         time.append(item[0].value)
         f.append(item[1].value)
     return f[1:]
-
-
 
