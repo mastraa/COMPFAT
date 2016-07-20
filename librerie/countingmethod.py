@@ -5,6 +5,7 @@ Author: Andrea Mastrangelo
 Last release 14/07/2016
 """
 import numpy as np
+from copy import deepcopy
 
 __version__="0.0.1"
 __s__=[-2,1,-3,5,-1,3,-4,4,-2]
@@ -94,7 +95,7 @@ def rearrangeMax(serie):
     maxPos=serie.index(max(serie))
     return serie[maxPos:]+serie[:maxPos]+serie[maxPos:maxPos+1]
 
-def rainflow(s):#s = serie of peak and valley
+def rainflow(serie):#s = serie of peak and valley
     """
     Rainflowcycle counting algorithm according to ASTM E1049-85 (2005)
     INPUT the serie of peak and valley as a vector
@@ -102,11 +103,10 @@ def rainflow(s):#s = serie of peak and valley
     mean value from "nonmandatory infornation" of E1049-85
     
     [value, cicles, mean]    
-    
-    TODO: understand why it modify INPUT array!!!
     """
+    s=deepcopy(serie)#prevent modification of original array!
     i=0
-    cycles=[]
+    ranges=[]
     if isinstance(s,np.ndarray):
         s=s.tolist()
     while i<len(s)-1:#-1 because index increment is later
@@ -119,16 +119,16 @@ def rainflow(s):#s = serie of peak and valley
             #print(s)
             if X>=Y:
                 if i == 2: #range Y contains the starting point
-                    cycles.append([Y,0.5,round((s[i-1]+s[i-2])/2,4)])
+                    ranges.append([Y,0.5,round((s[i-1]+s[i-2])/2,4)])
                     del(s[0]) #deleting starting point
                     i=i-1 #cause to reducing s lenght
                 else:
-                    cycles.append([Y,1.0,round((s[i-1]+s[i-2])/2,4)])
+                    ranges.append([Y,1.0,round((s[i-1]+s[i-2])/2,4)])
                     del(s[i-2:i]) #discarding Y peak and valley
                     i=i-3 #case to reducing s lenght of 2, but not reread (see position of i increment)
     for i in range (1,len(s)):
-        cycles.append([abs(s[i]-s[i-1]),0.5,round((s[i]+s[i-1])/2,4)])
-    return cycles 
+        ranges.append([abs(s[i]-s[i-1]),0.5,round((s[i]+s[i-1])/2,4)])
+    return ranges 
 
 def simplyRainflow(serie):
     """
@@ -136,29 +136,26 @@ def simplyRainflow(serie):
     Use for repetitive history
     Before use that rearrange the history: it must stat with maximum
     """
-    if serie.index(max(serie)) > 0:#check if history is rearranged
-        s=rearrangeMax(serie)
-    else:
-        s=serie
+    s=rearrangeMax(serie)#always rearrange!!! not sure to check only some values
     if isinstance(s,np.ndarray):
         s=s.tolist()
     i=0
-    cycles=[]
+    ranges=[]
     while i<len(s)-1:#-1 because index increment is later
         i=i+1
         if i>1:
             #create ranges
-            X=abs(s[i]-s[i-1])
-            Y=abs(s[i-1]-s[i-2])
+            X=round(abs(s[i]-s[i-1]),4)
+            Y=round(abs(s[i-1]-s[i-2]),4)
             #print (i,X,Y)
             #print(s)
             if X>=Y:
-                cycles.append([Y,1.0,(s[i-1]+s[i-2])/2])
+                ranges.append([Y,1.0,round((s[i-1]+s[i-2])/2,4)])
                 del(s[i-2:i]) #discarding Y peak and valley
                 i=i-3 #case to reducing s lenght of 2, but not reread (see position of i increment)
     for i in range (1,len(s)):
-        cycles.append([abs(s[i]-s[i-1]),0.5,(s[i]+s[i-1])/2])
-    return cycles
+        ranges.append([abs(s[i]-s[i-1]),0.5,round((s[i]+s[i-1])/2,4)])
+    return ranges
     
 def peakValley(s):
     """
@@ -193,7 +190,6 @@ def peakValley(s):
         else:
             break
     pv[1]=pv[1][:i]
-    print (pv)
     ranges=[]
     for i in range(0,len(pv[0])):
         try:
@@ -214,4 +210,34 @@ def simpleRange(s):
     ranges=[]
     for i in range (1,len(s)):
         ranges.append([abs(s[i]-s[i-1]),0.5,(s[i]+s[i-1])/2])
-    return range
+    return ranges
+    
+class Story:
+    """
+    Class with all the elaboration function for the charge datas
+    """
+    def __init__(self, spectrum):
+        pass
+        self.spectrum = spectrum
+        self.extreme = reverses(self.spectrum)
+    
+    def counting(self, cMethod="rainflow", hMethod="mean"):
+        """
+        choose counting method and calculate
+        default CM: rainflow
+        default HM: mean separation
+        """ 
+        if cMethod=="rainflow":
+            self.ranges=rainflow(self.extreme)
+        elif cMethod=="rainflow_s":
+            self.ranges=rainflow(self.extreme)
+        elif cMethod=="peakValley":
+            self.ranges=peakValley(self.extreme)
+        elif cMethod=="simpleRange":
+            self.ranges=simpleRange(self.extreme)
+        else:
+            print ("unknown method")
+        if hMethod=="mean":
+            self.block=histoMean(self.ranges)
+        else:
+            self.blockGen=histo(self.ranges)

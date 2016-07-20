@@ -59,13 +59,31 @@ if __name__ == '__main__':
 F=file.readF('data/spettro.xlsx')#list of forces
 for i in range(0,len(F)):
     F[i]=round(F[i],4)
-Fs=cm.reverses(F[:100])#list of maximums and minimums
+Fs=cm.reverses(F[:10])#list of maximums and minimums
+
 plt.plot(Fs)
 plt.show()
 Fc=cm.rainflow(Fs)#rainflow method: range, cycles, mean
-#Fc.append([11.1685,1.0,1148.8189])#prova per l'accumulo dei range con le medie
-#Fc.append([11.1685,3.0,1148.8189])#prova per l'accumulo dei range con le medie
-#Fc.append([11.1685,1.0,1149.8189])#prova per l'accumulo dei range con le medie
+
+Fc.append([11.1685,1.0,1148.8189])#prova per l'accumulo dei range con le medie
+Fc.append([11.1685,3.0,1148.8189])#prova per l'accumulo dei range con le medie
+Fc.append([11.1685,1.0,1149.8189])#prova per l'accumulo dei range con le medie
+
 h=cm.histoMean(Fc)
 h_1=cm.histo(Fc)
-file.writeFile('data/file.xlsx',h,'rainflow_result')
+"""file.writeFile('data/file.xlsx',h,'rainflow_result')
+"""
+
+storia=cm.Story(F[:10])
+storia.counting("rainflow")
+
+print(storia.ranges)
+print(storia.block)
+"""
+storia.counting("rainflow_s")
+print(storia.ranges)
+storia.counting("peakValley")
+print(storia.ranges)
+storia.counting("simpleRange"
+print(storia.ranges)
+"""
