@@ -7,11 +7,10 @@ Created on Tue Jul 26 13:58:33 2016
 
 import tkinter as tk
 from tkinter import ttk
-import matplotlib.pyplot as plt
+import pyqtgraph as pg
 
 def prova(x,y):
-    plt.plot(x,y)
-    plt.show()
+    pg.plot(x, y, pen='r')
 
 class MainWindow(tk.Tk):
     """
@@ -35,8 +34,9 @@ class MainWindow(tk.Tk):
         noteBook.add(p3, text='Analysis')
         noteBook.pack(fill=tk.BOTH, padx=2, pady=3) # fill "master" but pad sides
           
-          
+        
         """ Load Setting Page """
+        
         sec1=ttk.LabelFrame(p1,text="File setting")
         sec1.grid(column=0,row=0,sticky='W', padx=10, pady=10)
         ttk.Label(sec1,text="type").grid(column=0,row=0)
@@ -51,13 +51,12 @@ class MainWindow(tk.Tk):
         plotter=ttk.LabelFrame(p1,text="View data")
         plotter.grid(column=1,row=0,rowspan=2, sticky='NW', padx=10, pady=10)
         ttk.Button(plotter, text="ciao", command=lambda:prova([0,1,2],[1,2,3])).grid(column=0,row=0)
-          
+         
          
         """Material data page"""
           
           
         """Analysis page"""
-          
           
 radice=MainWindow("Titolo","900x600")
 radice.mainloop()
