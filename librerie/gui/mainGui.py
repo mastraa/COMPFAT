@@ -9,8 +9,8 @@ import tkinter as tk
 from tkinter import ttk
 import matplotlib.pyplot as plt
 
-def prova():
-    plt.plot([0,1,2],[1,2,3])
+def prova(x,y):
+    plt.plot(x,y)
     plt.show()
 
 class MainWindow(tk.Tk):
@@ -50,7 +50,7 @@ class MainWindow(tk.Tk):
           
         plotter=ttk.LabelFrame(p1,text="View data")
         plotter.grid(column=1,row=0,rowspan=2, sticky='NW', padx=10, pady=10)
-        ttk.Button(plotter, text="ciao", command=prova).grid(column=0,row=0)
+        ttk.Button(plotter, text="ciao", command=lambda:prova([0,1,2],[1,2,3])).grid(column=0,row=0)
           
          
         """Material data page"""

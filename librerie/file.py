@@ -14,21 +14,19 @@ from decimal import *
 
 
 
-def readF(nameFile):
+def readXls(nameFile, sheet, column, header):
     """
-    Read values from excel 2010 files
+    Read values from excel 2010 files column
     """
+    a=[]
     wb = load_workbook(filename = nameFile, read_only=True)
-    sheet_ranges = wb['Carichi']
-    rows=sheet_ranges.rows
-    time=[]
-    f=[]
-    for item in rows:
-        time.append(item[0].value)
-        f.append(item[1].value)
-    return f[1:]
+    sheet_ranges = wb[sheet]
+    f=sheet_ranges.columns[column]
+    for i in range (len(f)-header):
+        a.append(f[i+header].value)
+    return a
     
-def writeFile(nameFile, h, sheetName="Foglio1"):
+def writeXls(nameFile, h, sheetName="Foglio1"):
     """
     Write h values to excel file
     now it will overwrite an already existing file

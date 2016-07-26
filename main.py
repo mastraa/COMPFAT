@@ -12,14 +12,13 @@ import sys, os
 sys.path.append('librerie')
 
 
-import countingmethod as cm
+import countingMethod as cm
 import predictionMethod as pm
 #import numpy as np
-import pyqtgraph as pg
+#import pyqtgraph as pg
 import matplotlib.pyplot as plt
-import pygubu
 #import database as db
-import file
+import file, analysis
 
 
 try:
@@ -34,46 +33,9 @@ m,q=pm.rect2([0,2],[8,6])
 x=pm.xRect(4,m,q)
 """
 
-
-
-
-
-"""
-class lifePredict:
-    def __init__(self, master):
-        self.builder = builder = pygubu.Builder()
-        fpath = os.path.join(os.path.dirname(__file__),"gui.ui")
-        builder.add_from_file(fpath)
-
-        mainwindow = builder.get_object('mainWindow', master)
-
-        builder.connect_callbacks(self)
-        
-
-if __name__ == '__main__':
-    root = tk.Tk()
-    app = lifePredict(root)
-    root.mainloop()
-"""
-
-F=file.readF('data/Monza.xlsx')#list of forces
-for i in range(0,len(F)):
-    F[i]=round(F[i],4)
-Fs=cm.reverses(F[:150])
-plt.show()
-Fc=cm.rainflow(Fs)#rainflow method: range, cycles, mean
-
-#Fc.append([11.1685,1.0,1148.8189])#prova per l'accumulo dei range con le medie
-#Fc.append([11.1685,3.0,1148.8189])#prova per l'accumulo dei range con le medie
-#Fc.append([11.1685,1.0,1149.8189])#prova per l'accumulo dei range con le medie
-
-h=cm.histoMean(Fc)
-h_1=cm.histo(Fc)
-file.writeFile('data/file.xlsx',h,'Monza150')
-
-
-storia=cm.Story(F[:10])
-storia.counting("rainflow")
+storia = analysis.loadStory('data/Monza.xlsx', 1, fileType='xls', sheet='Carichi', column=1, limit=150)
+storia.counting()#rainflow and histMean by default
+storia.save('data/prova.xlsx', 'result')
 
 #print(storia.ranges)
 #print(storia.block)

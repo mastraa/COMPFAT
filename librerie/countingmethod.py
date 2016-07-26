@@ -8,9 +8,6 @@ import numpy as np
 from copy import deepcopy
 
 __version__="0.0.1"
-__s__=[-2,1,-3,5,-1,3,-4,4,-2]
-#__x__ = np.linspace(0,4,20)
-#__spectrum__= 0.2 + 0.5*np.sin(__x__) + 0.2*np.cos(10*__x__) + 0.2*np.sin(4*__x__)
 
 def reverses(history):
     """
@@ -211,33 +208,3 @@ def simpleRange(s):
     for i in range (1,len(s)):
         ranges.append([abs(s[i]-s[i-1]),0.5,(s[i]+s[i-1])/2])
     return ranges
-    
-class Story:
-    """
-    Class with all the elaboration function for the charge datas
-    """
-    def __init__(self, spectrum):
-        pass
-        self.spectrum = spectrum
-        self.extreme = reverses(self.spectrum)
-    
-    def counting(self, cMethod="rainflow", hMethod="mean"):
-        """
-        choose counting method and calculate
-        default CM: rainflow
-        default HM: mean separation
-        """ 
-        if cMethod=="rainflow":
-            self.ranges=rainflow(self.extreme)
-        elif cMethod=="rainflow_s":
-            self.ranges=rainflow(self.extreme)
-        elif cMethod=="peakValley":
-            self.ranges=peakValley(self.extreme)
-        elif cMethod=="simpleRange":
-            self.ranges=simpleRange(self.extreme)
-        else:
-            print ("unknown method")
-        if hMethod=="mean":
-            self.block=histoMean(self.ranges)
-        else:
-            self.blockGen=histo(self.ranges)
