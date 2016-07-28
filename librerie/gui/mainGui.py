@@ -8,6 +8,7 @@ Created on Tue Jul 26 13:58:33 2016
 import tkinter as tk
 from tkinter import ttk
 import pyqtgraph as pg
+import prova as p
 
 def prova(x,y):
     pg.plot(x, y, pen='r')
@@ -51,7 +52,7 @@ class MainWindow(tk.Tk):
         plotter=ttk.LabelFrame(p1,text="View data")
         plotter.grid(column=1,row=0,rowspan=2, sticky='NW', padx=10, pady=10)
         ttk.Button(plotter, text="ciao", command=lambda:prova([0,1,2],[1,2,3])).grid(column=0,row=0)
-         
+        ttk.Button(plotter, text="play", command=p.play).grid(column=0,row=1)
          
         """Material data page"""
           
