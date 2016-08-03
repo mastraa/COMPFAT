@@ -8,10 +8,12 @@ Created on Tue Jul 26 13:58:33 2016
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fdialog
+import tkinter.scrolledtext as ScrolledText
 import pyqtgraph as pg
 import analysis
+import time
 
-from openpyxl import load_workbook, Workbook
+from openpyxl import load_workbook
 
 def prova(x,y, btn):
     pg.plot(x, y, pen='r')
@@ -19,6 +21,7 @@ def prova(x,y, btn):
 
 class MainWindow(tk.Tk):
     """
+    TODO: add an error window to show if something going wrong and some istructions
     """
     def __init__(self, title, size):
         tk.Tk.__init__(self)
@@ -26,6 +29,7 @@ class MainWindow(tk.Tk):
         self.geometry(size)#x,y
         self.resizable(0,0)
         self.configure(background="gray89")
+        self.loadStored={}
         
         master = ttk.Frame(self, name='master') # create Frame in self
         master.pack(fill=tk.BOTH) # fill both sides of the parent
@@ -37,32 +41,39 @@ class MainWindow(tk.Tk):
         noteBook.add(p1, text='Load Data')
         noteBook.add(p2, text='Material Data')
         noteBook.add(p3, text='Analysis')
-        noteBook.pack(fill=tk.BOTH, padx=2, pady=3) # fill "master" but pad sides
+        noteBook.grid(column=0, row=0)
+        #noteBook.pack(padx=2, pady=3) # fill "master" but pad sides
+        ttk.Label(master, text="Log Monitor").grid(column=0, row=1)
+        self.logError=ScrolledText.ScrolledText(master, width=100, height=15)
+        self.logError.grid(row=2,column=0)
           
         
         """ Load Setting Page """
-        
+        #create and locate the frame
         sec1=ttk.LabelFrame(p1,text="File setting")
         sec1.grid(column=0,row=0,sticky='W', padx=10, pady=10)
+        #create all labels
         ttk.Label(sec1,text="type").grid(column=0,row=0)
         ttk.Label(sec1,text="url").grid(column=0,row=1)
         ttk.Label(sec1,text="page name").grid(column=0,row=2)
         ttk.Label(sec1,text="column number").grid(column=0,row=3)
         ttk.Label(sec1,text="header").grid(column=0,row=4)
+        #initialize all tkvariables
         self.fileType = tk.StringVar()
         self.pageName = tk.StringVar()
         self.column=tk.StringVar()
         self.header=tk.StringVar()
-        self.typeChoosen = ttk.Combobox(sec1, width=12, textvariable=self.fileType, state='readonly')
+        #widgets
+        self.typeChoosen = ttk.Combobox(sec1, width=12, textvariable=self.fileType, state='readonly')#choose file type
         self.typeChoosen.grid(column=1, row=0)
-        self.typeChoosen['values']=('.xlsx','.dat')
-        self.typeChoosen.current(1)
-        self.openBtn=ttk.Button(sec1,text='Open File', command=self.openFile)
+        self.typeChoosen['values']=('.xlsx')#now only xlsx available
+        self.typeChoosen.current(0)
+        self.openBtn=ttk.Button(sec1,text='Open File', command=self.openFile)#open file button
         self.openBtn.grid(column=1,row=1)
-        self.pageChoosen = ttk.Combobox(sec1, width=12, textvariable=self.pageName, state='readonly')
+        self.pageChoosen = ttk.Combobox(sec1, width=12, textvariable=self.pageName, state='readonly')#choose file page to read
         self.pageChoosen.grid(column=1, row=2)
-        ttk.Entry(sec1, textvariable=self.column).grid(column=1, row=3)
-        ttk.Entry(sec1, textvariable=self.header).grid(column=1, row=4)
+        ttk.Entry(sec1, textvariable=self.column, width=5).grid(column=1, row=3)
+        ttk.Entry(sec1, textvariable=self.header, width=5).grid(column=1, row=4)
         
         
         sec2=ttk.LabelFrame(p1,text="Counting Method")
@@ -70,23 +81,39 @@ class MainWindow(tk.Tk):
         ttk.Label(sec2,text="method").grid(column=0,row=0)
         ttk.Label(sec2,text="delta").grid(column=0,row=1)
         self.method = tk.StringVar()
-        self.methodChoosen = ttk.Combobox(sec2, width=12, textvariable=self.method, state='readonly')
+        self.methodChoosen = ttk.Combobox(sec2, width=20, textvariable=self.method, state='readonly')
         self.methodChoosen.grid(column=1, row=0)
         self.methodChoosen['values']=('Rainflow','Simply Rainflow','Peak Valley','Simple Range')
-        self.methodChoosen.current(1)
+        self.methodChoosen.current(0)
         
           
         plotter=ttk.LabelFrame(p1,text="View data")
         plotter.grid(column=1,row=0,rowspan=2, sticky='NW', padx=10, pady=10)
         ttk.Label(plotter,text="story name").grid(column=0,row=0)
+        ttk.Label(plotter,text="lower limit").grid(column=0,row=1)
+        ttk.Label(plotter,text="max limit").grid(column=2,row=1)
+        ttk.Label(plotter,text="File Name").grid(column=0,row=3)
         self.storyName=tk.StringVar()
+        self.lowLim=tk.StringVar()#disabled, to use set header
+        self.maxLim=tk.StringVar()
+        self.saveFile=tk.StringVar()
+        self.saveType=tk.StringVar()
         ttk.Entry(plotter, textvariable=self.storyName).grid(column=1, row=0)
-        ttk.Button(plotter, text="Create Story", command=self.createStory).grid(column=1,row=1)
+        ttk.Entry(plotter, textvariable=self.lowLim, state='disabled').grid(column=1, row=1)
+        ttk.Entry(plotter, textvariable=self.maxLim).grid(column=3, row=1)
+        ttk.Button(plotter, text="Create Story", command=self.createStory).grid(column=1,row=2)
+        ttk.Entry(plotter, textvariable=self.saveFile).grid(column=1, row=3)
+        self.saveChoosen = ttk.Combobox(plotter, width=6, textvariable=self.saveType, state='readonly')#choose file type
+        self.saveChoosen.grid(column=2, row=3)
+        self.saveChoosen['values']=('.xlsx')#now only xlsx available
+        self.saveChoosen.current(0)
+        ttk.Button(plotter, text="Save", command=self.saveStory).grid(column=1,row=4)
         
         
     def openFile(self):
         """
         Open file with given extension and save the file name
+        TODO: generalized to open also dat files
         """
         fileOpt={}
         fileOpt['initialdir']='data'
@@ -102,12 +129,26 @@ class MainWindow(tk.Tk):
         """
         add load story to the list
         at the momento it will count with rainflow and save data to default file
-        
-        TODO: choose file and sheet name 
         """
-        self.loads.append(analysis.loadStory(self.fileName, int(self.header.get()), fileType=str(self.fileType.get()), sheet=self.pageName.get(), column=int(self.column.get())))  
-        analysis.loadStory.counting()
-        analysis.loadStory.save('data/prova.xlsx', 'result_1')
+        newStory = analysis.loadStory(self.fileName, int(self.header.get()), fileType=str(self.fileType.get()), sheet=self.pageName.get(), column=int(self.column.get()), limit=int(self.maxLim.get()))  
+        nSname =str(self.storyName.get())       
+        self.loadStored[nSname] = newStory   
+        self.loadStored[nSname].counting(cMethod=str(self.method.get())) #range counting
+        string=time.strftime("%H:%M:%S")+" "+nSname+" strory created"
+        self.logError.insert(tk.INSERT,string+"\n")
+        
+        
+    def saveStory(self):
+        """
+        Save all story to file
+        the page name will be the story name
+        """
+        for key in self.loadStored:
+            self.loadStored[key].save('data/'+str(self.saveFile.get())+str(self.saveType.get()), key)
+            string=time.strftime("%H:%M:%S")+" "+key+" strory saved to "+"data/"+str(self.saveFile.get())+str(self.saveType.get())
+            self.logError.insert(tk.INSERT,string+"\n")
+        
+        
         
         """Material data page"""
           
