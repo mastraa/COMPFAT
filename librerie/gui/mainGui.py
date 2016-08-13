@@ -21,7 +21,6 @@ def prova(x,y, btn):
 
 class MainWindow(tk.Tk):
     """
-    TODO: add an error window to show if something going wrong and some istructions
     """
     def __init__(self, title, size):
         tk.Tk.__init__(self)
@@ -93,11 +92,13 @@ class MainWindow(tk.Tk):
         ttk.Label(plotter,text="lower limit").grid(column=0,row=1)
         ttk.Label(plotter,text="max limit").grid(column=2,row=1)
         ttk.Label(plotter,text="File Name").grid(column=0,row=3)
+        ttk.Label(plotter,text="Delete Story").grid(column=0,row=6)
         self.storyName=tk.StringVar()
         self.lowLim=tk.StringVar()#disabled, to use set header
         self.maxLim=tk.StringVar()
         self.saveFile=tk.StringVar()
         self.saveType=tk.StringVar()
+        self.st2Delete=tk.StringVar()
         ttk.Entry(plotter, textvariable=self.storyName).grid(column=1, row=0)
         ttk.Entry(plotter, textvariable=self.lowLim, state='disabled').grid(column=1, row=1)
         ttk.Entry(plotter, textvariable=self.maxLim).grid(column=3, row=1)
@@ -108,6 +109,9 @@ class MainWindow(tk.Tk):
         self.saveChoosen['values']=('.xlsx')#now only xlsx available
         self.saveChoosen.current(0)
         ttk.Button(plotter, text="Save", command=self.saveStory).grid(column=1,row=4)
+        self.deleteStory = ttk.Combobox(plotter, width=15, textvariable=self.st2Delete, state='readonly')#choose file type
+        self.deleteStory.grid(column=1,row=6)
+        ttk.Button(plotter, text="Delete", command=self.deleteStory).grid(column=2,row=6)        
         
         
     def openFile(self):
@@ -136,6 +140,7 @@ class MainWindow(tk.Tk):
         self.loadStored[nSname].counting(cMethod=str(self.method.get())) #range counting
         string=time.strftime("%H:%M:%S")+" "+nSname+" strory created"
         self.logError.insert(tk.INSERT,string+"\n")
+        self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
         
         
     def saveStory(self):
@@ -148,9 +153,20 @@ class MainWindow(tk.Tk):
             string=time.strftime("%H:%M:%S")+" "+key+" strory saved to "+"data/"+str(self.saveFile.get())+str(self.saveType.get())
             self.logError.insert(tk.INSERT,string+"\n")
         
-        
+    def deleteStory(self):
+        """
+        delete a story saved in loadStored
+        """
+        key = self.st2Delete.get()
+        del self.loadStored[key]
+        string=time.strftime("%H:%M:%S")+" "+key+" strory deleted"
+        self.logError.insert(tk.INSERT,string+"\n")
         
         """Material data page"""
+        self.material=tk.StringVar()
+        self.matrix=tk.StringVar()
+        self.behaviour=tk.StringVar()
+        self.architecture=tk.StringVar()
           
           
         """Analysis page"""

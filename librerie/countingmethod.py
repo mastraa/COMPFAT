@@ -157,7 +157,7 @@ def simplyRainflow(serie):
 def peakValley(s):
     """
     PeakValley counting method
-    According to the algorithm described in appunti di costruzione di macchine
+    According to the algorithm described in 'Appunti di costruzione di macchine'
     prof. B.Atzori
     """
     Mean=np.mean(s)
