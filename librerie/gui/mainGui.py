@@ -12,6 +12,7 @@ import tkinter.scrolledtext as ScrolledText
 import pyqtgraph as pg
 import analysis
 import time
+import matGui
 
 from openpyxl import load_workbook
 
@@ -29,6 +30,7 @@ class MainWindow(tk.Tk):
         self.resizable(0,0)
         self.configure(background="gray89")
         self.loadStored={}
+        self.matStored={}
         
         master = ttk.Frame(self, name='master') # create Frame in self
         master.pack(fill=tk.BOTH) # fill both sides of the parent
@@ -111,7 +113,23 @@ class MainWindow(tk.Tk):
         ttk.Button(plotter, text="Save", command=self.saveStory).grid(column=1,row=4)
         self.deleteStory = ttk.Combobox(plotter, width=15, textvariable=self.st2Delete, state='readonly')#choose file type
         self.deleteStory.grid(column=1,row=6)
-        ttk.Button(plotter, text="Delete", command=self.deleteStory).grid(column=2,row=6)        
+        ttk.Button(plotter, text="Delete", command=self.deleteStory).grid(column=2,row=6)
+
+        """Material data page"""
+        self.material=tk.StringVar()
+        self.matrix=tk.StringVar()
+        self.behaviour=tk.StringVar()
+        self.architecture=tk.StringVar()
+        
+        mat=ttk.LabelFrame(p2,text="Material")
+        mat.grid(column=0,row=0,sticky='W', padx=10, pady=10)
+        ttk.Button(mat,text="Choose Material", command=lambda: matGui.MatWindow("Material Options", [400,300], self.matStored)).grid(row=0,column=0)
+        
+        beh=ttk.LabelFrame(p1,text="Material")
+        beh.grid(column=0,row=1,sticky='W', padx=10, pady=10)
+
+        
+        """Analysis page"""        
         
         
     def openFile(self):
@@ -161,13 +179,18 @@ class MainWindow(tk.Tk):
         del self.loadStored[key]
         string=time.strftime("%H:%M:%S")+" "+key+" strory deleted"
         self.logError.insert(tk.INSERT,string+"\n")
+        """
+        TODO: delete debug print
+        """
+        print(self.matStored)
         
-        """Material data page"""
-        self.material=tk.StringVar()
-        self.matrix=tk.StringVar()
-        self.behaviour=tk.StringVar()
-        self.architecture=tk.StringVar()
+    
+    def chooseMat(self):
+        t = tk.Toplevel(self)
+        t.wm_title("Choose Material")
+        l = tk.Label(t, text="This is window #%s")
+        l.pack(side="top", fill="both", expand=True, padx=100, pady=100)
           
           
-        """Analysis page"""
+        
           

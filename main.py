@@ -6,7 +6,7 @@ This is a temporary script file.
 """
 
 # cd /Users/mastraa/Documents/Andrea/Università/Magistrale/Tesi/fatigue
-# cd /Users/gregoriomastrangelo/Desktop/Andrea/Universita/Tesi_Mastrangelo/fatigue/librerie/gui
+# cd /Users/gregoriomastrangelo/Desktop/Andrea/Universita/Tesi_Mastrangelo/fatigue
 
 import sys
 
