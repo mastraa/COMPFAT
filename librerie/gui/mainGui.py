@@ -10,9 +10,8 @@ from tkinter import ttk
 from tkinter import filedialog as fdialog
 import tkinter.scrolledtext as ScrolledText
 import pyqtgraph as pg
-import analysis
 import time
-import matGui
+import matGui, database, analysis
 
 from openpyxl import load_workbook
 
@@ -116,14 +115,40 @@ class MainWindow(tk.Tk):
         ttk.Button(plotter, text="Delete", command=self.deleteStory).grid(column=2,row=6)
 
         """Material data page"""
-        self.material=tk.StringVar()
+        self.material=tk.StringVar()    #type of fiber
         self.matrix=tk.StringVar()
         self.behaviour=tk.StringVar()
         self.architecture=tk.StringVar()
+        self.idMat=tk.StringVar()       #id material choosen
         
         mat=ttk.LabelFrame(p2,text="Material")
         mat.grid(column=0,row=0,sticky='W', padx=10, pady=10)
-        ttk.Button(mat,text="Choose Material", command=lambda: matGui.MatWindow("Material Options", [400,300], self.matStored)).grid(row=0,column=0)
+        
+        lista=database.searchField('matLib','fiber')
+        self.matChoosen = ttk.Combobox(mat, width=12, textvariable=self.material, state='readonly')
+        self.matChoosen.grid(column=0, row=0)
+        self.matChoosen['values']=lista
+        ttk.Button(mat,text="Search", command=self.searchMat).grid(row=0,column=1)
+        
+        self.tree=ttk.Treeview(mat,selectmode="extended",columns=('1','2','3','4'))
+        self.tree.heading("#0", text="Id")
+        self.tree.column("#0",minwidth=0,width=30)
+        self.tree.heading("#1", text="Name")
+        self.tree.column("#1",minwidth=0,width=200)
+        self.tree.heading("#2", text="Fiber")
+        self.tree.column("#2",minwidth=0,width=80)
+        self.tree.heading("#3", text="Matrix")
+        self.tree.column("#3",minwidth=0,width=50)
+        self.tree.heading("#4", text="R [MPa]")
+        self.tree.column("#4",minwidth=0,width=100)
+        self.tree.grid(column=0, columnspan=4, row=2)
+        
+        
+        ttk.Label(mat,text="Mat ID").grid(column=0,row=3)
+        ttk.Entry(mat, textvariable=self.idMat).grid(column=1, row=3)
+        ttk.Button(mat,text="Save Material", command=self.close).grid(row=3,column=2)        
+        
+        
         
         beh=ttk.LabelFrame(p1,text="Material")
         beh.grid(column=0,row=1,sticky='W', padx=10, pady=10)
@@ -171,26 +196,32 @@ class MainWindow(tk.Tk):
             string=time.strftime("%H:%M:%S")+" "+key+" strory saved to "+"data/"+str(self.saveFile.get())+str(self.saveType.get())
             self.logError.insert(tk.INSERT,string+"\n")
         
-    def deleteStory(self):
-        """
-        delete a story saved in loadStored
-        """
-        key = self.st2Delete.get()
-        del self.loadStored[key]
-        string=time.strftime("%H:%M:%S")+" "+key+" strory deleted"
-        self.logError.insert(tk.INSERT,string+"\n")
-        """
-        TODO: delete debug print
-        """
-        print(self.matStored)
-        
-    
     def chooseMat(self):
         t = tk.Toplevel(self)
         t.wm_title("Choose Material")
         l = tk.Label(t, text="This is window #%s")
         l.pack(side="top", fill="both", expand=True, padx=100, pady=100)
-          
-          
+        
+    def deleteStory(self):
+        """
+        delete story stored in loadStored
+        """
+        key = self.st2Delete.get()
+        del self.loadStored[key]
+        self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
+        string=time.strftime("%H:%M:%S")+" "+key+" strory deleted"
+        self.logError.insert(tk.INSERT,string+"\n")
+        
+    def close(self):
+        """TODO: find the way to give back the material data"""
+        self.matStore['prova']=analysis.matList(int(self.idMat.get()), 'prova')
+    
+    def searchMat(self):
+        materiale=str(self.material.get())
+        for item in database.searchAll('matLib','fiber',materiale):
+            self.addToTable(item)
+        
+    def addToTable(self, item):
+        self.tree.insert('','end',text=item[0],values=(item[4],item[1],item[2],item[3]))
         
           

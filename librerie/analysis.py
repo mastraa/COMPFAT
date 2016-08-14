@@ -48,3 +48,6 @@ class loadStory:
     def save(self, fileName, sheet):
         file.writeXls(fileName, self.block, sheet)
 
+class matList:
+    def __init__(self, id_n, name):
+        pass

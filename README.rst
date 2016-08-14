@@ -28,6 +28,8 @@ infinite it's like 99/-99
 
 GUI features
 
+Load Data Page:
+
 File setting area:
 Users can set the extension of the file, open a file (at the moment only xlsx are available)
 Once file is opened users can choose the page and set the column in which loads are stored and
@@ -50,6 +52,15 @@ file name and extension could be setted, page name will be the story name
 At the moment only xlsx file are available
 
 Below the widget to delete a story, select the story name set before and click DELETE
+
+
+Material Data Page:
+
+You can choose from all kind of fiber in the top combobox
+Search button show in the table below the list of material saved with that kind of fiber
+
+Save Material Button saves the material you choose from ID in the entry box so
+yopu can choose this mat in the analysis page to produce the output
 
 
 Log Monitor:

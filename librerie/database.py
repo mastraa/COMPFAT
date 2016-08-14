@@ -28,16 +28,20 @@ def searchField(table, field):
     return a list of all item in field column of table selcted
     """
     lista =[]
-    table='matLib'
-    cursor.execute("SELECT '"+field+"' FROM '"+table+"'")
+    cursor.execute('SELECT ({coi}) FROM {tn}'.\
+        format(coi=field, tn=table))
     result = cursor.fetchone()
-    while result:
+    while result: 
         lista.append(result[0])
         result = cursor.fetchone()
     return list(set(lista))
     
-def searchAll():
+    
+def searchAll(table, field, goal):
     """
-    Return a list of item of alla column
+    Return a list of item of all column
     with the request characteristic in table
     """
+    cursor.execute("SELECT * FROM "+table+" WHERE "+field+"=:Id",{"Id": goal})
+    result = cursor.fetchall()
+    return result
