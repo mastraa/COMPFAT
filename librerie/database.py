@@ -45,3 +45,8 @@ def searchAll(table, field, goal):
     cursor.execute("SELECT * FROM "+table+" WHERE "+field+"=:Id",{"Id": goal})
     result = cursor.fetchall()
     return result
+    
+def searchAllGroups(fibre, matrix, beh, arch):
+    cursor.execute("SELECT * FROM matGroup WHERE fibre=? AND behav=? AND arch=? AND matrix=?",(fibre, beh, arch, matrix))
+    result = cursor.fetchall()
+    return result

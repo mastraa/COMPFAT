@@ -50,4 +50,9 @@ class loadStory:
 
 class matList:
     def __init__(self, id_n, name, sigma, matrix, fiber):
+        self.id=id_n
+        self.sigma=sigma
+        self.matrix=matrix
+        self.fiber=fiber
+        self.name=name
         pass

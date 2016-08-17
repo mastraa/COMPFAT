@@ -116,9 +116,6 @@ class MainWindow(tk.Tk):
 
         """Material data page"""
         self.material=tk.StringVar()    #type of fiber
-        self.matrix=tk.StringVar()
-        self.behaviour=tk.StringVar()
-        self.architecture=tk.StringVar()
         
         mat=ttk.LabelFrame(p2,text="Material")
         mat.grid(column=0,row=0,sticky='W', padx=10, pady=10)
@@ -129,17 +126,19 @@ class MainWindow(tk.Tk):
         self.matChoosen['values']=lista
         ttk.Button(mat,text="Search", command=self.searchMat).grid(row=0,column=1)
         
-        self.tree=ttk.Treeview(mat,selectmode="extended",columns=('1','2','3','4'))
-        self.tree.heading("#0", text="Id")
-        self.tree.column("#0",minwidth=0,width=30)
-        self.tree.heading("#1", text="Name")
-        self.tree.column("#1",minwidth=0,width=200)
-        self.tree.heading("#2", text="Fiber")
-        self.tree.column("#2",minwidth=0,width=80)
-        self.tree.heading("#3", text="Matrix")
-        self.tree.column("#3",minwidth=0,width=50)
-        self.tree.heading("#4", text="R [MPa]")
-        self.tree.column("#4",minwidth=0,width=100)
+        self.tree=ttk.Treeview(mat,selectmode="extended",columns=('1','2','3','4','5'))
+        self.tree.heading("#0", text=" ")
+        self.tree.column("#0",minwidth=0,width=1)        
+        self.tree.heading("#1", text="Id")
+        self.tree.column("#1",minwidth=0,width=30)
+        self.tree.heading("#2", text="Name")
+        self.tree.column("#2",minwidth=0,width=200)
+        self.tree.heading("#3", text="Fibre")
+        self.tree.column("#3",minwidth=0,width=80)
+        self.tree.heading("#4", text="Matrix")
+        self.tree.column("#4",minwidth=0,width=50)
+        self.tree.heading("#5", text="R [MPa]")
+        self.tree.column("#5",minwidth=0,width=100)
         self.tree.grid(column=0, columnspan=4, row=2)
         
         
@@ -147,9 +146,55 @@ class MainWindow(tk.Tk):
         
         
         
-        """Analysis page"""        
-        beh=ttk.LabelFrame(p1,text="Material")
-        beh.grid(column=0,row=1,sticky='W', padx=10, pady=10)        
+        """Analysis page"""
+        self.matAnal=tk.StringVar()#material selected for analysis
+        self.behaviour=tk.StringVar()
+        self.architecture=tk.StringVar()
+        self.Rmethod=tk.StringVar()
+        
+        beh=ttk.LabelFrame(p3,text="Analysis Setting")
+        beh.grid(column=0,row=1,sticky='W', padx=10, pady=10)
+        ttk.Label(beh,text="Material").grid(column=0,row=0)
+        self.matSet = ttk.Combobox(beh, width=20, textvariable=self.matAnal, state='readonly')#choose file type
+        self.matSet.grid(column=1, row=0)
+        ttk.Label(beh,text="Behaviour").grid(column=3,row=0)
+        self.behSet = ttk.Combobox(beh, width=5, textvariable=self.behaviour, state='readonly')#choose file type
+        self.behSet.grid(column=4, row=0)
+        self.behSet['values']=['FD','MD']
+        self.archSet = ttk.Combobox(beh, width=5, textvariable=self.architecture, state='readonly')#choose file type
+        self.archSet.grid(column=5, row=0)
+        self.archSet['values']=['UD','W']
+        ttk.Button(beh,text="Show Group", command=self.showGroup).grid(row=0,column=6)
+        ttk.Label(beh,text="R method").grid(column=7,row=0)
+        self.archSet = ttk.Combobox(beh, width=5, textvariable=self.architecture, state='readonly')#choose file type
+        self.archSet.grid(column=8, row=0)
+        self.archSet['values']=['Haigh','Interpolate']
+                
+        
+        self.groupTree=ttk.Treeview(beh,selectmode="extended",columns=('1','2','3','4','5','6','7','8','9','10'))
+        self.groupTree.heading("#0", text=" ")
+        self.groupTree.column("#0",minwidth=0,width=1)
+        self.groupTree.heading("#1", text="Group N")
+        self.groupTree.column("#1",minwidth=0,width=50)
+        self.groupTree.heading("#2", text="Fibre")
+        self.groupTree.column("#2",minwidth=0,width=75)
+        self.groupTree.heading("#3", text="Matrix")
+        self.groupTree.column("#3",minwidth=0,width=50)
+        self.groupTree.heading("#4", text="Behav.")
+        self.groupTree.column("#4",minwidth=0,width=50)
+        self.groupTree.heading("#5", text="Arch")
+        self.groupTree.column("#5",minwidth=0,width=50)
+        self.groupTree.heading("#6", text="50%")
+        self.groupTree.column("#6",minwidth=0,width=50)
+        self.groupTree.heading("#7", text="90%")
+        self.groupTree.column("#7",minwidth=0,width=50)
+        self.groupTree.heading("#8", text="T_s")
+        self.groupTree.column("#8",minwidth=0,width=50)
+        self.groupTree.heading("#9", text="Quality")
+        self.groupTree.column("#9",minwidth=0,width=100)
+        self.groupTree.heading("#10", text="R")
+        self.groupTree.column("#10",minwidth=0,width=20)
+        self.groupTree.grid(column=0, columnspan=6, row=2)
         
         
     def openFile(self):
@@ -191,12 +236,6 @@ class MainWindow(tk.Tk):
             string=time.strftime("%H:%M:%S")+" "+key+" strory saved to "+"data/"+str(self.saveFile.get())+str(self.saveType.get())
             self.logError.insert(tk.INSERT,string+"\n")
         
-    def chooseMat(self):
-        t = tk.Toplevel(self)
-        t.wm_title("Choose Material")
-        l = tk.Label(t, text="This is window #%s")
-        l.pack(side="top", fill="both", expand=True, padx=100, pady=100)
-        
     def deleteStory(self):
         """
         delete story stored in loadStored
@@ -208,21 +247,40 @@ class MainWindow(tk.Tk):
         self.logError.insert(tk.INSERT,string+"\n")
         
     def saveMat(self):
-        """TODO: find the way to give back the material data"""
-        #self.matStore['prova']=analysis.matList(int(self.idMat.get()), 'prova')
+        """
+        get material from list and create a material class saved in a dict
+        """
         for item in self.tree.selection():
             values = self.tree.item(item, 'values')
-            id_mat = int(self.tree.item(item, 'text'))
-            self.matStored[values[0]]=analysis.matList(id_mat, values[0], values[3], values[2], values[1])
-            string=time.strftime("%H:%M:%S")+" "+values[0]+" material saved"
+            self.matStored[values[1]]=analysis.matList(values[0], values[1], values[4], values[3], values[2])
+            self.matSet['values']=list(self.matStored.keys())
+            string=time.strftime("%H:%M:%S")+" "+values[1]+" material saved"
             self.logError.insert(tk.INSERT,string+"\n")
     
     def searchMat(self):
+        """
+        clear table and
+        search materials from database using fibre as field
+        """
+        for i in self.tree.get_children():
+            self.tree.delete(i)
         materiale=str(self.material.get())
         for item in database.searchAll('matLib','fiber',materiale):
-            self.addToTable(item)
+            self.tree.insert('','end',values=(item[0],item[4],item[1],item[2], item[3]))
+            
+    def showGroup(self):
+        """
+        search the groups with the given characteristics
+        and show it in the table
+        """
+        arch=str(self.architecture.get())
+        beh=str(self.behaviour.get())
+        name=str(self.matAnal.get())
+        fiber=str(self.matStored[name].fiber)
+        matrix=str(self.matStored[name].matrix)
+        groups=database.searchAllGroups(fiber, matrix, beh, arch)
+        for item in groups:
+            self.groupTree.insert('','end',values=(item[1],item[3],item[4],item[5],item[6],item[7],item[8],item[9],'qualità',item[2]))
         
-    def addToTable(self, item):
-        self.tree.insert('','end',text=item[0],values=(item[4],item[1],item[2],item[3]))
         
           
