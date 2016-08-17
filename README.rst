@@ -59,8 +59,16 @@ Material Data Page:
 You can choose from all kind of fiber in the top combobox
 Search button show in the table below the list of material saved with that kind of fiber
 
-Save Material Button saves the material you choose from ID in the entry box so
-yopu can choose this mat in the analysis page to produce the output
+Save Selected Material Button saves the material you selected in the table, now
+that item will be available in Analysis page
+
+
+
+
+
+Adding new materials:
+Name and id must be unique, id is auto assigned, name is not. In case of egual
+name the query will be ignored.
 
 
 Log Monitor:

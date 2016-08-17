@@ -119,7 +119,6 @@ class MainWindow(tk.Tk):
         self.matrix=tk.StringVar()
         self.behaviour=tk.StringVar()
         self.architecture=tk.StringVar()
-        self.idMat=tk.StringVar()       #id material choosen
         
         mat=ttk.LabelFrame(p2,text="Material")
         mat.grid(column=0,row=0,sticky='W', padx=10, pady=10)
@@ -144,17 +143,13 @@ class MainWindow(tk.Tk):
         self.tree.grid(column=0, columnspan=4, row=2)
         
         
-        ttk.Label(mat,text="Mat ID").grid(column=0,row=3)
-        ttk.Entry(mat, textvariable=self.idMat).grid(column=1, row=3)
-        ttk.Button(mat,text="Save Material", command=self.close).grid(row=3,column=2)        
+        ttk.Button(mat,text="Save Selected Material", command=self.saveMat).grid(row=3,column=2)        
         
         
-        
-        beh=ttk.LabelFrame(p1,text="Material")
-        beh.grid(column=0,row=1,sticky='W', padx=10, pady=10)
-
         
         """Analysis page"""        
+        beh=ttk.LabelFrame(p1,text="Material")
+        beh.grid(column=0,row=1,sticky='W', padx=10, pady=10)        
         
         
     def openFile(self):
@@ -212,9 +207,15 @@ class MainWindow(tk.Tk):
         string=time.strftime("%H:%M:%S")+" "+key+" strory deleted"
         self.logError.insert(tk.INSERT,string+"\n")
         
-    def close(self):
+    def saveMat(self):
         """TODO: find the way to give back the material data"""
-        self.matStore['prova']=analysis.matList(int(self.idMat.get()), 'prova')
+        #self.matStore['prova']=analysis.matList(int(self.idMat.get()), 'prova')
+        for item in self.tree.selection():
+            values = self.tree.item(item, 'values')
+            id_mat = int(self.tree.item(item, 'text'))
+            self.matStored[values[0]]=analysis.matList(id_mat, values[0], values[3], values[2], values[1])
+            string=time.strftime("%H:%M:%S")+" "+values[0]+" material saved"
+            self.logError.insert(tk.INSERT,string+"\n")
     
     def searchMat(self):
         materiale=str(self.material.get())

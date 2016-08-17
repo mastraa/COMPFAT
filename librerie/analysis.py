@@ -49,5 +49,5 @@ class loadStory:
         file.writeXls(fileName, self.block, sheet)
 
 class matList:
-    def __init__(self, id_n, name):
+    def __init__(self, id_n, name, sigma, matrix, fiber):
         pass
