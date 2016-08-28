@@ -21,7 +21,7 @@ def genHaigh(_sR, _R, _sa, sm):
     in case of sm<0 give compressive sR
     """
     _sm=(1+_R)/2*_sa #median value of database data
-    m,q=rect2([0,_sa],[_sm,_sR])
+    m,q=rect2([_sm,_sa],[_sR,0])
     return q+m*sm
 
 def interpolationR():
