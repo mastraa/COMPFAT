@@ -172,7 +172,7 @@ class MainWindow(tk.Tk):
         ttk.Label(beh,text="R method").grid(column=7,row=0)
         self.archSet = ttk.Combobox(beh, width=5, textvariable=self.architecture, state='readonly')#choose file type
         self.archSet.grid(column=8, row=0)
-        self.archSet['values']=['Haigh','Interpolate']
+        self.archSet['values']=['Haigh','Generalized Haigh'] #interpolation method will be available soon
                 
         
         self.groupTree=ttk.Treeview(beh,selectmode="extended",columns=('1','2','3','4','5','6','7','8','9','10'))
