@@ -126,7 +126,7 @@ class MainWindow(tk.Tk):
         self.matChoosen['values']=lista
         ttk.Button(mat,text="Search", command=self.searchMat).grid(row=0,column=1)
         
-        self.tree=ttk.Treeview(mat,selectmode="extended",columns=('1','2','3','4','5'))
+        self.tree=ttk.Treeview(mat,selectmode="extended",columns=('1','2','3','4','5','6','7'))
         self.tree.heading("#0", text=" ")
         self.tree.column("#0",minwidth=0,width=1)        
         self.tree.heading("#1", text="Id")
@@ -137,8 +137,12 @@ class MainWindow(tk.Tk):
         self.tree.column("#3",minwidth=0,width=80)
         self.tree.heading("#4", text="Matrix")
         self.tree.column("#4",minwidth=0,width=50)
-        self.tree.heading("#5", text="R [MPa]")
-        self.tree.column("#5",minwidth=0,width=100)
+        self.tree.heading("#5", text="Rt [MPa]")
+        self.tree.column("#5",minwidth=0,width=75)
+        self.tree.heading("#7", text="Rc [MPa]")
+        self.tree.column("#7",minwidth=0,width=75)
+        self.tree.heading("#7", text="Note")
+        self.tree.column("#7",minwidth=0,width=200)
         self.tree.grid(column=0, columnspan=4, row=2)
         
         
@@ -218,13 +222,16 @@ class MainWindow(tk.Tk):
         at the momento it will count with rainflow and save data to default file
         """
         newStory = analysis.loadStory(self.fileName, int(self.header.get()), fileType=str(self.fileType.get()), sheet=self.pageName.get(), column=int(self.column.get()), limit=int(self.maxLim.get()))  
-        nSname =str(self.storyName.get())       
-        self.loadStored[nSname] = newStory   
-        self.loadStored[nSname].counting(cMethod=str(self.method.get())) #range counting
-        string=time.strftime("%H:%M:%S")+" "+nSname+" strory created"
+        if newStory.Error=='01':
+            string=time.strftime("%H:%M:%S")+" Error: the column doesn't exist! Story won't be created"
+        else:
+            nSname =str(self.storyName.get())       
+            self.loadStored[nSname] = newStory   
+            self.loadStored[nSname].counting(cMethod=str(self.method.get())) #range counting
+            string=time.strftime("%H:%M:%S")+" "+nSname+" strory created"
+            self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
         self.logError.insert(tk.INSERT,string+"\n")
-        self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
-        
+             
         
     def saveStory(self):
         """
@@ -266,7 +273,7 @@ class MainWindow(tk.Tk):
             self.tree.delete(i)
         materiale=str(self.material.get())
         for item in database.searchAll('matLib','fiber',materiale):
-            self.tree.insert('','end',values=(item[0],item[4],item[1],item[2], item[3]))
+            self.tree.insert('','end',values=(item[0],item[1],item[2],item[3], item[4],item[5],item[6]))
             
     def showGroup(self):
         """

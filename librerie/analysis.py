@@ -17,12 +17,15 @@ class loadStory:
     column begin from 0=A
     """
     def __init__(self, fileName, header, fileType='.xlsx', sheet='Carichi', column=1, limit=None):
-        if fileType=='.xlsx':        
-            self.spectrum=file.readXls(fileName, sheet, column, header)
-        if limit:
-            self.extreme = cm.reverses(self.spectrum[:limit])
-        else:
-            self.extreme = cm.reverses(self.spectrum)
+        if fileType=='.xlsx':   
+            try: 
+                self.spectrum=file.readXls(fileName, sheet, column, header)
+                if limit:
+                    self.extreme = cm.reverses(self.spectrum[:limit])
+                else:
+                    self.extreme = cm.reverses(self.spectrum)
+            except (IndexError):
+                self.Error='01'
     
     def counting(self, cMethod="Rainflow", hMethod="mean"):
         """
