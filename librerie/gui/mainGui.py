@@ -11,7 +11,8 @@ from tkinter import filedialog as fdialog
 import tkinter.scrolledtext as ScrolledText
 import pyqtgraph as pg
 import time
-import matGui, database, analysis
+import database, analysis
+import countingMethod as cm
 
 from openpyxl import load_workbook
 
@@ -63,6 +64,8 @@ class MainWindow(tk.Tk):
         self.pageName = tk.StringVar()
         self.column=tk.StringVar()
         self.header=tk.StringVar()
+        self.deltaR=tk.StringVar()#range interval for packing, null=no packing
+        self.deltaM=tk.StringVar()#median interval for packing, null=no packing
         #widgets
         self.typeChoosen = ttk.Combobox(sec1, width=12, textvariable=self.fileType, state='readonly')#choose file type
         self.typeChoosen.grid(column=1, row=0)
@@ -79,12 +82,15 @@ class MainWindow(tk.Tk):
         sec2=ttk.LabelFrame(p1,text="Counting Method")
         sec2.grid(column=0,row=1,sticky='W', padx=10, pady=10)
         ttk.Label(sec2,text="method").grid(column=0,row=0)
-        ttk.Label(sec2,text="delta").grid(column=0,row=1)
+        ttk.Label(sec2,text="delta Range").grid(column=0,row=1)
+        ttk.Label(sec2,text="delta Medium").grid(column=0,row=2)
         self.method = tk.StringVar()
         self.methodChoosen = ttk.Combobox(sec2, width=20, textvariable=self.method, state='readonly')
         self.methodChoosen.grid(column=1, row=0)
         self.methodChoosen['values']=('Rainflow','Simply Rainflow','Peak Valley','Simple Range')
         self.methodChoosen.current(0)
+        ttk.Entry(sec2, textvariable=self.deltaR, width=5).grid(column=1, row=1)
+        ttk.Entry(sec2, textvariable=self.deltaM, width=5).grid(column=1, row=2)
         
           
         plotter=ttk.LabelFrame(p1,text="View data")
@@ -224,10 +230,13 @@ class MainWindow(tk.Tk):
         newStory = analysis.loadStory(self.fileName, int(self.header.get()), fileType=str(self.fileType.get()), sheet=self.pageName.get(), column=int(self.column.get()), limit=int(self.maxLim.get()))  
         if newStory.Error=='01':
             string=time.strftime("%H:%M:%S")+" Error: the column doesn't exist! Story won't be created"
+        elif (newStory.Error=='02'):
+            string=time.strftime("%H:%M:%S")+" Error: the sheet doesn't exist! Story won't be created"
         else:
             nSname =str(self.storyName.get())       
             self.loadStored[nSname] = newStory   
             self.loadStored[nSname].counting(cMethod=str(self.method.get())) #range counting
+            self.loadStore[nSname].packing(self.deltaR, self.deltaM)
             string=time.strftime("%H:%M:%S")+" "+nSname+" strory created"
             self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
         self.logError.insert(tk.INSERT,string+"\n")

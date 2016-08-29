@@ -208,3 +208,51 @@ def simpleRange(s):
     for i in range (1,len(s)):
         ranges.append([abs(s[i]-s[i-1]),0.5,(s[i]+s[i-1])/2])
     return ranges
+
+def packRange(ranges, dim):
+    """
+    it will pack ranges and means in interval of dim dimension
+    new range value would be the medim value of interval
+    
+    it returns new histo range list
+    
+    it will work only with histoRange output
+    """
+    x=ranges[0][0]-dim#max range value-dimension of interval
+    #x is the lower value of everty interval
+    block=[]
+    i=0#counter for new variable
+    j=0#counter of ranges items inserted
+    while x>0:
+        block.append([x+dim/2,[]])
+        #it will create a pack for every interval
+        #someone will be empty and deleted
+        for item in ranges[j:]:
+            if x<item[0]:
+                for value in item[1]:
+                    block[i][1].append(value)
+                j=j+1#it will exclude used ranges
+        x=x-dim
+        i=i+1
+    """    
+    previous loop will lose last renges if their value is near to zero
+    because the lower limit of next interval would be negative
+    so they will be added assuming as range value the higher value of remaining
+    ranges
+    """
+    block.append([ranges[j][0],[]])
+    for item in ranges[j:]:
+        for value in item[1]:
+            block[i][1].append(value)
+    #deleting empty cycles
+    t=0
+    while t <len(block):
+        if block[t][1]==[]:
+            del(block[t])
+        else:
+            t=t+1
+    return block
+    
+def packMedian(ranges, dim):
+    block=[]
+    pass

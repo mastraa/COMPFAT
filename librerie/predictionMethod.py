@@ -19,8 +19,10 @@ def genHaigh(_sR, _R, _sa, sm):
     sm = median value of applicated load
     _* values are database data
     in case of sm<0 give compressive sR
+    TODO: no enough, see Carraro instructions to complete!
     """
-    _sm=(1+_R)/2*_sa #median value of database data
+    _smax=2*_sa/(1-_R)
+    _sm=(1+_R)/2*_smax #median value of database data
     m,q=rect2([_sm,_sa],[_sR,0])
     return q+m*sm
 
