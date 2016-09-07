@@ -251,8 +251,34 @@ def packRange(ranges, dim):
             del(block[t])
         else:
             t=t+1
+    for item in block:
+        print(item)
     return block
     
 def packMedian(ranges, dim):
     block=[]
-    pass
+    for item in ranges:#for every range value
+        v=[]
+        block.append([item[0],[]])
+        for i in item[1]:
+            v.append(int(i[1]))
+        lim=min(v)
+        max_m=max(v)
+        if len(v)>1:
+            while lim<max_m:
+                c=0
+                for i in item[1]:
+                    if i[1]>=lim and i[1]<lim+dim:
+                        c=c+i[0]
+                lim=lim+dim
+                block[-1][1].append([lim+dim/2,c])
+        else:
+            block[-1][1]=item[1]
+    for item in block:
+        print(item)
+            
+        
+        
+        
+            
+    
