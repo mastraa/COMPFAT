@@ -81,6 +81,8 @@ def histoMean(s):
                         flag=0#get down flag
                 if flag:#if mean values yet to be add
                     item[1].append([value[1],round(value[2],4)])
+    """for item in temp_v:
+        print (temp_v)"""#debug
     return temp_v
         
     
@@ -252,30 +254,33 @@ def packRange(ranges, dim):
         else:
             t=t+1
     for item in block:
-        print(item)
+        print(item)#debug
     return block
     
 def packMedian(ranges, dim):
     block=[]
     for item in ranges:#for every range value
         v=[]
-        block.append([item[0],[]])
+        block.append([item[0],[]])#insert amplitude value
         for i in item[1]:
             v.append(int(i[1]))
         lim=min(v)
         max_m=max(v)
-        if len(v)>1:
+        if len(v)>1:#there are more than one block
             while lim<max_m:
                 c=0
                 for i in item[1]:
                     if i[1]>=lim and i[1]<lim+dim:
                         c=c+i[0]
                 lim=lim+dim
-                block[-1][1].append([lim+dim/2,c])
+                block[-1][1].append([c,lim+dim/2])
         else:
             block[-1][1]=item[1]
     for item in block:
-        print(item)
+        print(item)#debug
+        
+def analize(ranges, dataList):
+    pass
             
         
         

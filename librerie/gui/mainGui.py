@@ -176,7 +176,7 @@ class MainWindow(tk.Tk):
         self.archSet['values']=['UD','W']
         ttk.Button(beh,text="Show Group", command=self.showGroup).grid(row=0,column=6)
         ttk.Label(beh,text="R method").grid(column=7,row=0)
-        self.archSet = ttk.Combobox(beh, width=5, textvariable=self.architecture, state='readonly')#choose file type
+        self.archSet = ttk.Combobox(beh, width=8, textvariable=self.Rmethod, state='readonly')#choose file type
         self.archSet.grid(column=8, row=0)
         self.archSet['values']=['Haigh','Generalized Haigh'] #interpolation method will be available soon
                 
@@ -226,19 +226,22 @@ class MainWindow(tk.Tk):
         """
         add load story to the list
         at the momento it will count with rainflow and save data to default file
-        """
-        newStory = analysis.loadStory(self.fileName, int(self.header.get()), fileType=str(self.fileType.get()), sheet=self.pageName.get(), column=int(self.column.get()), limit=int(self.maxLim.get()))  
-        if newStory.Error=='01':
-            string=time.strftime("%H:%M:%S")+" Error: the column doesn't exist! Story won't be created"
-        elif (newStory.Error=='02'):
-            string=time.strftime("%H:%M:%S")+" Error: the sheet doesn't exist! Story won't be created"
-        else:
-            nSname =str(self.storyName.get())       
-            self.loadStored[nSname] = newStory   
-            self.loadStored[nSname].counting(cMethod=str(self.method.get())) #range counting
-            self.loadStored[nSname].packing(int(self.deltaR.get()), int(self.deltaM.get()))
-            string=time.strftime("%H:%M:%S")+" "+nSname+" strory created"
-            self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
+        """       
+        try:
+            newStory = analysis.loadStory(self.fileName, int(self.header.get()), fileType=str(self.fileType.get()), sheet=self.pageName.get(), column=int(self.column.get()), limit=int(self.maxLim.get()))  
+            if newStory.Error=='01':
+                string=time.strftime("%H:%M:%S")+" Error: the column doesn't exist! Story won't be created"
+            elif (newStory.Error=='02'):
+                string=time.strftime("%H:%M:%S")+" Error: the sheet doesn't exist! Story won't be created"
+            else:
+                nSname =str(self.storyName.get())       
+                self.loadStored[nSname] = newStory   
+                self.loadStored[nSname].counting(cMethod=str(self.method.get())) #range counting
+                self.loadStored[nSname].packing(int(self.deltaR.get()), int(self.deltaM.get()))
+                string=time.strftime("%H:%M:%S")+" "+nSname+" strory created"
+                self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
+        except ValueError:
+            string=time.strftime("%H:%M:%S")+" Error: fill all fields requested"
         self.logError.insert(tk.INSERT,string+"\n")
              
         

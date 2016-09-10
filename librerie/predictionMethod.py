@@ -13,18 +13,18 @@ def haigh(_sa,_sR, sm):
     """
     return _sa*(1-sm/_sR)
 
-def genHaigh(_sR, _R, _sa, sm):
+def genHaigh(_sR, _R, _sa, sm, sa):
     """
     Haigh diagrama method starting from any R value
     sm = median value of applicated load
     _* values are database data
     in case of sm<0 give compressive sR
-    TODO: no enough, see Carraro instructions to complete!
     """
     _smax=2*_sa/(1-_R)
     _sm=(1+_R)/2*_smax #median value of database data
     m,q=rect2([_sm,_sa],[_sR,0])
-    return q+m*sm
+    R=(sm-sa)/(sm-sa)
+    return q*_sR/(_sR+q*(1+R)/(1-R))#intersection of Haigh and R curve
 
 def interpolationR():
     """
