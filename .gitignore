@@ -8,3 +8,5 @@ data/Montmelo.xlsx
 *.pyc
 
 *.pyc
+
+.DS_Store
