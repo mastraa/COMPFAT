@@ -66,11 +66,52 @@ class loadStory:
     
     def save(self, fileName, sheet):
         file.writeXls(fileName, self.block, sheet)
+    
+    def analize(self, data,_sRT,_sRC):
+        """
+        it analize the load story for given material
+        data = groups selected
+        _ = group material limit
+        """
+        _sRT=int(_sRT)
+        _sRC=int(_sRC)
+        D=0
+        Rlist=[]
+        smax90=0#limit value
+        for j in data:
+            Rlist.append(j[0])
+        for item in self.block:#every amplitude
+            sa=item[0]
+            for i in item[1]:#every mean for amplitude
+                sm=i[1]
+                N=i[0]
+                R=(sm-sa)/(sm+sa)
+                if sm>0:
+                    _sR=_sRT
+                else:
+                    _sR=_sRC
+                try:
+                    x=Rlist.index(R)
+                    sa90=data[x][2]*_sR
+                except ValueError:#no correspondent group
+                    try:
+                        x=Rlist.index(-1)
+                        _sa=data[x][2]
+                        sa90=pm.haigh(_sa,R,sm)*_sR
+                    except ValueError:
+                        _R=int(data[0][0])
+                        _smax90R=float(data[0][2])*_sR
+                        sa90=pm.genHaigh(_sR,_R,_smax90R,R,sa)
+                if smax90<sm+sa:
+                    print('rompi tutto')
+                    D=1
+                print(sa90)
 
 class matList:
-    def __init__(self, id_n, name, sigma, matrix, fiber):
+    def __init__(self, id_n, name, sigmaT, matrix, fiber,sigmaR):
         self.id=id_n
-        self.sigma=sigma
+        self.sigmaT=sigmaT
+        self.sigmaR=sigmaR
         self.matrix=matrix
         self.fiber=fiber
         self.name=name

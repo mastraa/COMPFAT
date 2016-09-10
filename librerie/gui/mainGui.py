@@ -161,25 +161,26 @@ class MainWindow(tk.Tk):
         self.behaviour=tk.StringVar()
         self.architecture=tk.StringVar()
         self.Rmethod=tk.StringVar()
+        self.dataList=[]#list of alla groups of selected materials to pass to analize function
+        self.st2Anal=tk.StringVar()
         
         beh=ttk.LabelFrame(p3,text="Analysis Setting")
         beh.grid(column=0,row=1,sticky='W', padx=10, pady=10)
         ttk.Label(beh,text="Material").grid(column=0,row=0)
-        self.matSet = ttk.Combobox(beh, width=20, textvariable=self.matAnal, state='readonly')#choose file type
+        self.matSet = ttk.Combobox(beh, width=20, textvariable=self.matAnal, state='readonly')
         self.matSet.grid(column=1, row=0)
         ttk.Label(beh,text="Behaviour").grid(column=3,row=0)
-        self.behSet = ttk.Combobox(beh, width=5, textvariable=self.behaviour, state='readonly')#choose file type
+        self.behSet = ttk.Combobox(beh, width=5, textvariable=self.behaviour, state='readonly')
         self.behSet.grid(column=4, row=0)
         self.behSet['values']=['FD','MD']
-        self.archSet = ttk.Combobox(beh, width=5, textvariable=self.architecture, state='readonly')#choose file type
+        self.archSet = ttk.Combobox(beh, width=5, textvariable=self.architecture, state='readonly')
         self.archSet.grid(column=5, row=0)
         self.archSet['values']=['UD','W']
         ttk.Button(beh,text="Show Group", command=self.showGroup).grid(row=0,column=6)
         ttk.Label(beh,text="R method").grid(column=7,row=0)
-        self.archSet = ttk.Combobox(beh, width=8, textvariable=self.Rmethod, state='readonly')#choose file type
+        self.archSet = ttk.Combobox(beh, width=8, textvariable=self.Rmethod, state='readonly')
         self.archSet.grid(column=8, row=0)
         self.archSet['values']=['Haigh','Generalized Haigh'] #interpolation method will be available soon
-                
         
         self.groupTree=ttk.Treeview(beh,selectmode="extended",columns=('1','2','3','4','5','6','7','8','9','10'))
         self.groupTree.heading("#0", text=" ")
@@ -205,6 +206,11 @@ class MainWindow(tk.Tk):
         self.groupTree.heading("#10", text="R")
         self.groupTree.column("#10",minwidth=0,width=20)
         self.groupTree.grid(column=0, columnspan=6, row=2)
+        
+        ttk.Label(beh,text="Story").grid(column=0,row=3)
+        self.analStory = ttk.Combobox(beh, width=15, textvariable=self.st2Anal, state='readonly')#choose file type
+        self.analStory.grid(column=1,row=3)
+        ttk.Button(beh,text="Analize", command=self.analize).grid(row=3,column=2)
         
         
     def openFile(self):
@@ -240,6 +246,7 @@ class MainWindow(tk.Tk):
                 self.loadStored[nSname].packing(int(self.deltaR.get()), int(self.deltaM.get()))
                 string=time.strftime("%H:%M:%S")+" "+nSname+" strory created"
                 self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
+                self.analStory['values']=list(self.loadStored.keys()) #update analStory Combobox
         except ValueError:
             string=time.strftime("%H:%M:%S")+" Error: fill all fields requested"
         self.logError.insert(tk.INSERT,string+"\n")
@@ -262,6 +269,7 @@ class MainWindow(tk.Tk):
         key = self.st2Delete.get()
         del self.loadStored[key]
         self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
+        self.analStory['values']=list(self.loadStored.keys()) #update analStory Combobox
         string=time.strftime("%H:%M:%S")+" "+key+" strory deleted"
         self.logError.insert(tk.INSERT,string+"\n")
         
@@ -271,7 +279,7 @@ class MainWindow(tk.Tk):
         """
         for item in self.tree.selection():
             values = self.tree.item(item, 'values')
-            self.matStored[values[1]]=analysis.matList(values[0], values[1], values[4], values[3], values[2])
+            self.matStored[values[1]]=analysis.matList(values[0], values[1], values[4], values[3], values[2],values[5])
             self.matSet['values']=list(self.matStored.keys())
             string=time.strftime("%H:%M:%S")+" "+values[1]+" material saved"
             self.logError.insert(tk.INSERT,string+"\n")
@@ -291,6 +299,7 @@ class MainWindow(tk.Tk):
         """
         search the groups with the given characteristics
         and show it in the table
+        TODO: in the future possibility to add only some groups in the dataList
         """
         arch=str(self.architecture.get())
         beh=str(self.behaviour.get())
@@ -300,6 +309,12 @@ class MainWindow(tk.Tk):
         groups=database.searchAllGroups(fiber, matrix, beh, arch)
         for item in groups:
             self.groupTree.insert('','end',values=(item[1],item[3],item[4],item[5],item[6],item[7],item[8],item[9],'qualità',item[2]))
+            self.dataList.append([item[2],item[7],item[8]])
+            print(self.dataList)
+            
+    def analize(self):
+        key = self.st2Anal.get()
+        self.loadStored[key].analize(self.dataList,self.matStored[self.matAnal.get()].sigmaT,self.matStored[self.matAnal.get()].sigmaR)
         
         
           

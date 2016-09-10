@@ -253,8 +253,8 @@ def packRange(ranges, dim):
             del(block[t])
         else:
             t=t+1
-    for item in block:
-        print(item)#debug
+    """for item in block:
+        print(item)"""#debug
     return block
     
 def packMedian(ranges, dim):
@@ -276,11 +276,9 @@ def packMedian(ranges, dim):
                 block[-1][1].append([c,lim+dim/2])
         else:
             block[-1][1]=item[1]
-    for item in block:
-        print(item)#debug
-        
-def analize(ranges, dataList):
-    pass
+    """for item in block:
+        print(item)"""#debug
+    return block
             
         
         
