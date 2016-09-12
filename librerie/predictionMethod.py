@@ -23,7 +23,11 @@ def genHaigh(_sR, _R, _smax, R, sa):
     _sm=_smax*(1+_R)/2 #median value of database data
     _sa=_smax-_sm
     m,q=rect2([_sm,_sa],[_sR,0])
-    return q*_sR/(_sR+q*(1+R)/(1-R))#intersection of Haigh and R curve
+    
+    sm=(1+R)/(1-R)*sa    
+    #result=q*_sR/(_sR+q*(1+R)/(1-R))#intersection of Haigh and R curve
+    result=haigh(q,_sR,sm)#classic haigh with found q
+    return result
 
 def interpolationR():
     """
