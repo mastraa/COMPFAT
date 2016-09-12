@@ -72,40 +72,38 @@ class loadStory:
         it analize the load story for given material
         data = groups selected
         _ = group material limit
+        the group give the fatigue parameter to the max value
         """
         _sRT=int(_sRT)
         _sRC=int(_sRC)
         D=0
         Rlist=[]
-        smax90=0#limit value
         for j in data:
             Rlist.append(j[0])
         for item in self.block:#every amplitude
-            sa=item[0]
+            sa=item[0]#cycle amplitude
             for i in item[1]:#every mean for amplitude
-                sm=i[1]
-                N=i[0]
+                sm=i[1]#cycle median
+                N=i[0]#number of applied cycle fo that load
                 R=(sm-sa)/(sm+sa)
                 if sm>0:
                     _sR=_sRT
                 else:
                     _sR=_sRC
                 try:
-                    x=Rlist.index(R)
-                    sa90=data[x][2]*_sR
+                    x=Rlist.index(R)#if we have the group with same R
+                    sa90=data[x][2]*_sR*(1+R)/2
                 except ValueError:#no correspondent group
                     try:
-                        x=Rlist.index(-1)
-                        _sa=data[x][2]
-                        sa90=pm.haigh(_sa,R,sm)*_sR
+                        x=Rlist.index(-1)#we have group for R=-1
+                        _sa=data[x][2]*_sR#R=-1 so (1+R)/2=0
+                        sa90=pm.haigh(_sa,R,sm)
                     except ValueError:
                         _R=int(data[0][0])
                         _smax90R=float(data[0][2])*_sR
                         sa90=pm.genHaigh(_sR,_R,_smax90R,R,sa)
-                if smax90<sm+sa:
-                    print('rompi tutto')
-                    D=1
-                print(sa90)
+                D=D+pm.miner(_sR,sa90,sa,N)
+                print(sa90,D)
 
 class matList:
     def __init__(self, id_n, name, sigmaT, matrix, fiber,sigmaR):

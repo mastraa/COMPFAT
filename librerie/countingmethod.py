@@ -257,7 +257,7 @@ def packRange(ranges, dim, v):
             del(block[t])
         else:
             t=t+1
-    """for item in block:
+    for item in block:
         print(item)#debug"""
     return block
     
@@ -272,12 +272,10 @@ def packMedian(ranges, dim, v):
         z=[]
         block.append([item[0],[]])#insert amplitude value
         for i in item[1]:
-            z.append(int(i[1]))
+            z.append(round(i[1]))
         lim=min(z)
         max_m=max(z)
         if len(z)>1:#there are more than one block
-            if lim==max_m:
-                max_m=max_m+1#instead we have a problem with low dim values, we lost some cycles
             while lim<=max_m:
                 c=0
                 for i in item[1]:

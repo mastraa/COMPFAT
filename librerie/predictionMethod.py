@@ -36,7 +36,7 @@ def interpolationR():
     """
     pass
 
-def miner(_sR, _sa, sa, Nf):
+def miner(_sR, _sa, sa, N):
     """
     miner damaging method
     _sa = database or haigh output amplitude for incipient collpase
@@ -44,7 +44,7 @@ def miner(_sR, _sa, sa, Nf):
     """
     m,q=rect2([0,log10(_sR)],[log10(2*10**6),log10(_sa)])
     Nmax=10**(xRect(log10(sa),m,q))
-    return Nf/Nmax
+    return N/Nmax
 
 def rect2(p1,p2):
     """
