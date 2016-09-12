@@ -218,7 +218,6 @@ def packRange(ranges, dim, v):
     
     it will work only with histoRange output
     """
-    print (ranges)
     x=ranges[0][0]-dim#max range value-dimension of interval
     #x is the lower value of everty interval
     block=[]
@@ -258,35 +257,37 @@ def packRange(ranges, dim, v):
             del(block[t])
         else:
             t=t+1
-    for item in block:
-        print(item)#debug
+    """for item in block:
+        print(item)#debug"""
     return block
     
-def packMedian(ranges, dim):
+def packMedian(ranges, dim, v):
     """
     Pack cycles with similan median
     Call only after a packRange
     """
-    print()
+    print(v)
     block=[]
     for item in ranges:#for every range value
-        v=[]
+        z=[]
         block.append([item[0],[]])#insert amplitude value
         for i in item[1]:
-            v.append(int(i[1]))
-        lim=min(v)
-        max_m=max(v)
-        print(lim, max_m)
-        if len(v)>1:#there are more than one block
-            while lim<max_m:
+            z.append(int(i[1]))
+        lim=min(z)
+        max_m=max(z)
+        if len(z)>1:#there are more than one block
+            if lim==max_m:
+                max_m=max_m+1#instead we have a problem with low dim values, we lost some cycles
+            while lim<=max_m:
                 c=0
                 for i in item[1]:
                     if i[1]>=lim and i[1]<lim+dim:
                         c=c+i[0]
                 lim=lim+dim
-                block[-1][1].append([c,lim+dim/2])
-                print(block[-1][1][-1])
-                print(lim)
+                if v == 1:#median value
+                    block[-1][1].append([c,lim+dim/2])
+                else:#max value
+                    block[-1][1].append([c,lim+dim])
         else:
             block[-1][1]=item[1]
     for item in block:
@@ -296,7 +297,7 @@ def packMedian(ranges, dim):
                 del item[1][t]
             else:
                 t=t+1
-    """for item in block:
+    for item in block:
         print(item)#debug"""
     return block
             

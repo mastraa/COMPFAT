@@ -247,7 +247,7 @@ class MainWindow(tk.Tk):
                 nSname =str(self.storyName.get())       
                 self.loadStored[nSname] = newStory   
                 self.loadStored[nSname].counting(cMethod=str(self.method.get())) #range counting
-                self.loadStored[nSname].packing(self.deltaR.get(), self.deltaM.get(),self.blockLevel)
+                self.loadStored[nSname].packing(self.deltaR.get(), self.deltaM.get(),self.blockLevel.get())
                 string=time.strftime("%H:%M:%S")+" "+nSname+" strory created"
                 self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
                 self.analStory['values']=list(self.loadStored.keys()) #update analStory Combobox

@@ -62,7 +62,7 @@ class loadStory:
         if mR>0:
             self.block=cm.packRange(self.block,mR,v)
             if mM>0:
-                self.block=cm.packMedian(self.block,mM)
+                self.block=cm.packMedian(self.block,mM,v)
     
     def save(self, fileName, sheet):
         file.writeXls(fileName, self.block, sheet)
