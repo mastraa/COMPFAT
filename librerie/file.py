@@ -19,7 +19,8 @@ def readXls(nameFile, sheet, column, header):
     Read values from excel 2010 files column
     """
     a=[]
-    wb = load_workbook(filename = nameFile, read_only=True)
+    wb = load_workbook(filename = nameFile, read_only=True, data_only=True)
+    #data_only to read current values of cells and not formulas
     sheet_ranges = wb[sheet]
     f=sheet_ranges.columns[column]
     for i in range (len(f)-header):

@@ -64,8 +64,9 @@ class MainWindow(tk.Tk):
         self.pageName = tk.StringVar()
         self.column=tk.StringVar()
         self.header=tk.StringVar()
-        self.deltaR=tk.StringVar()#range interval for packing, null=no packing
-        self.deltaM=tk.StringVar()#median interval for packing, null=no packing
+        self.deltaR=tk.DoubleVar()#range interval for packing, null=no packing
+        self.deltaM=tk.DoubleVar()#median interval for packing, null=no packing
+        self.blockLevel=tk.IntVar()
         #widgets
         self.typeChoosen = ttk.Combobox(sec1, width=12, textvariable=self.fileType, state='readonly')#choose file type
         self.typeChoosen.grid(column=1, row=0)
@@ -91,6 +92,9 @@ class MainWindow(tk.Tk):
         self.methodChoosen.current(0)
         ttk.Entry(sec2, textvariable=self.deltaR, width=5).grid(column=1, row=1)
         ttk.Entry(sec2, textvariable=self.deltaM, width=5).grid(column=1, row=2)
+        ttk.Radiobutton(sec2, text="Median Value", variable=self.blockLevel, value=1).grid(column=0, row=3)
+        ttk.Radiobutton(sec2, text="Max Value", variable=self.blockLevel, value=2).grid(column=1, row=3)
+        self.blockLevel.set(1)#set default radio
         
           
         plotter=ttk.LabelFrame(p1,text="View data")
@@ -243,7 +247,7 @@ class MainWindow(tk.Tk):
                 nSname =str(self.storyName.get())       
                 self.loadStored[nSname] = newStory   
                 self.loadStored[nSname].counting(cMethod=str(self.method.get())) #range counting
-                self.loadStored[nSname].packing(int(self.deltaR.get()), int(self.deltaM.get()))
+                self.loadStored[nSname].packing(self.deltaR.get(), self.deltaM.get(),self.blockLevel)
                 string=time.strftime("%H:%M:%S")+" "+nSname+" strory created"
                 self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
                 self.analStory['values']=list(self.loadStored.keys()) #update analStory Combobox

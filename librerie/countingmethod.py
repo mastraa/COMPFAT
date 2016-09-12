@@ -84,8 +84,6 @@ def histoMean(s):
     """for item in temp_v:
         print (temp_v)"""#debug
     return temp_v
-        
-    
     
 def rearrangeMax(serie):
     """
@@ -211,7 +209,7 @@ def simpleRange(s):
         ranges.append([abs(s[i]-s[i-1]),0.5,(s[i]+s[i-1])/2])
     return ranges
 
-def packRange(ranges, dim):
+def packRange(ranges, dim, v):
     """
     it will pack ranges and means in interval of dim dimension
     new range value would be the medim value of interval
@@ -220,13 +218,17 @@ def packRange(ranges, dim):
     
     it will work only with histoRange output
     """
+    print (ranges)
     x=ranges[0][0]-dim#max range value-dimension of interval
     #x is the lower value of everty interval
     block=[]
     i=0#counter for new variable
     j=0#counter of ranges items inserted
     while x>0:
-        block.append([x+dim/2,[]])
+        if v == 1:
+            block.append([x+dim/2,[]])#block value is the median value
+        else:
+            block.append([x+dim,[]])#block values is the max extreme of interval
         #it will create a pack for every interval
         #someone will be empty and deleted
         for item in ranges[j:]:
@@ -237,15 +239,18 @@ def packRange(ranges, dim):
         x=x-dim
         i=i+1
     """    
-    previous loop will lose last renges if their value is near to zero
+    previous loop will lose last ranges if their value is near to zero
     because the lower limit of next interval would be negative
     so they will be added assuming as range value the higher value of remaining
     ranges
     """
-    block.append([ranges[j][0],[]])
-    for item in ranges[j:]:
-        for value in item[1]:
-            block[i][1].append(value)
+    try:
+        block.append([ranges[j][0],[]])
+        for item in ranges[j:]:
+            for value in item[1]:
+                block[i][1].append(value)
+    except IndexError:#alla ranges inserted yet
+        pass
     #deleting empty cycles
     t=0
     while t <len(block):
@@ -253,11 +258,16 @@ def packRange(ranges, dim):
             del(block[t])
         else:
             t=t+1
-    """for item in block:
-        print(item)"""#debug
+    for item in block:
+        print(item)#debug
     return block
     
 def packMedian(ranges, dim):
+    """
+    Pack cycles with similan median
+    Call only after a packRange
+    """
+    print()
     block=[]
     for item in ranges:#for every range value
         v=[]
@@ -266,6 +276,7 @@ def packMedian(ranges, dim):
             v.append(int(i[1]))
         lim=min(v)
         max_m=max(v)
+        print(lim, max_m)
         if len(v)>1:#there are more than one block
             while lim<max_m:
                 c=0
@@ -274,10 +285,19 @@ def packMedian(ranges, dim):
                         c=c+i[0]
                 lim=lim+dim
                 block[-1][1].append([c,lim+dim/2])
+                print(block[-1][1][-1])
+                print(lim)
         else:
             block[-1][1]=item[1]
+    for item in block:
+        t=0
+        while t<len(item[1]):
+            if item[1][t][0]==0:
+                del item[1][t]
+            else:
+                t=t+1
     """for item in block:
-        print(item)"""#debug
+        print(item)#debug"""
     return block
             
         

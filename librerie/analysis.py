@@ -55,12 +55,12 @@ class loadStory:
             self.block=cm.histo(self.ranges)
     
     
-    def packing(self,mR,mM):
+    def packing(self,mR,mM,v):
         """
         check if packing limit are setted and call packing functions
         """
         if mR>0:
-            self.block=cm.packRange(self.block,mR)
+            self.block=cm.packRange(self.block,mR,v)
             if mM>0:
                 self.block=cm.packMedian(self.block,mM)
     
