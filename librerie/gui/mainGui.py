@@ -100,19 +100,17 @@ class MainWindow(tk.Tk):
         plotter=ttk.LabelFrame(p1,text="View data")
         plotter.grid(column=1,row=0,rowspan=2, sticky='NW', padx=10, pady=10)
         ttk.Label(plotter,text="story name").grid(column=0,row=0)
-        ttk.Label(plotter,text="lower limit").grid(column=0,row=1)
-        ttk.Label(plotter,text="max limit").grid(column=2,row=1)
+        ttk.Label(plotter,text="max limit").grid(column=0,row=1)
         ttk.Label(plotter,text="File Name").grid(column=0,row=3)
-        ttk.Label(plotter,text="Delete Story").grid(column=0,row=6)
+        
         self.storyName=tk.StringVar()
-        self.lowLim=tk.StringVar()#disabled, to use set header
         self.maxLim=tk.StringVar()
         self.saveFile=tk.StringVar()
         self.saveType=tk.StringVar()
         self.st2Delete=tk.StringVar()
+        self.st2Plot=tk.StringVar()
         ttk.Entry(plotter, textvariable=self.storyName).grid(column=1, row=0)
-        ttk.Entry(plotter, textvariable=self.lowLim, state='disabled').grid(column=1, row=1)
-        ttk.Entry(plotter, textvariable=self.maxLim).grid(column=3, row=1)
+        ttk.Entry(plotter, textvariable=self.maxLim).grid(column=1, row=1)
         ttk.Button(plotter, text="Create Story", command=self.createStory).grid(column=1,row=2)
         ttk.Entry(plotter, textvariable=self.saveFile).grid(column=1, row=3)
         self.saveChoosen = ttk.Combobox(plotter, width=6, textvariable=self.saveType, state='readonly')#choose file type
@@ -120,9 +118,14 @@ class MainWindow(tk.Tk):
         self.saveChoosen['values']=('.xlsx')#now only xlsx available
         self.saveChoosen.current(0)
         ttk.Button(plotter, text="Save", command=self.saveStory).grid(column=1,row=4)
+        ttk.Label(plotter,text="Delete Story").grid(column=0,row=6)        
         self.deleteStory = ttk.Combobox(plotter, width=15, textvariable=self.st2Delete, state='readonly')#choose file type
         self.deleteStory.grid(column=1,row=6)
         ttk.Button(plotter, text="Delete", command=self.deleteStory).grid(column=2,row=6)
+        ttk.Label(plotter,text="Plot Story").grid(column=0,row=7)
+        self.toPlotStory = ttk.Combobox(plotter, width=15, textvariable=self.st2Plot, state='readonly')#choose file type
+        self.toPlotStory.grid(column=1,row=7)
+        ttk.Button(plotter, text="Plot", command=self.plotStory).grid(column=2,row=7)
 
         """Material data page"""
         self.material=tk.StringVar()    #type of fiber
@@ -182,9 +185,9 @@ class MainWindow(tk.Tk):
         self.archSet['values']=['UD','W']
         ttk.Button(beh,text="Show Group", command=self.showGroup).grid(row=0,column=6)
         ttk.Label(beh,text="R method").grid(column=7,row=0)
-        self.archSet = ttk.Combobox(beh, width=8, textvariable=self.Rmethod, state='readonly')
-        self.archSet.grid(column=8, row=0)
-        self.archSet['values']=['Haigh','Generalized Haigh'] #interpolation method will be available soon
+        self.RmethodSet = ttk.Combobox(beh, width=8, textvariable=self.Rmethod, state='readonly')
+        self.RmethodSet.grid(column=8, row=0)
+        self.RmethodSet['values']=['Haigh','R method'] #interpolation method will be available soon
         
         self.groupTree=ttk.Treeview(beh,selectmode="extended",columns=('1','2','3','4','5','6','7','8','9','10'))
         self.groupTree.heading("#0", text=" ")
@@ -239,10 +242,8 @@ class MainWindow(tk.Tk):
         """       
         try:
             newStory = analysis.loadStory(self.fileName, int(self.header.get()), fileType=str(self.fileType.get()), sheet=self.pageName.get(), column=int(self.column.get()), limit=int(self.maxLim.get()))  
-            if newStory.Error=='01':
-                string=time.strftime("%H:%M:%S")+" Error: the column doesn't exist! Story won't be created"
-            elif (newStory.Error=='02'):
-                string=time.strftime("%H:%M:%S")+" Error: the sheet doesn't exist! Story won't be created"
+            if newStory.Error:
+                string=newStory.errorsCheck(time.strftime("%H:%M:%S"))
             else:
                 nSname =str(self.storyName.get())       
                 self.loadStored[nSname] = newStory   
@@ -251,7 +252,8 @@ class MainWindow(tk.Tk):
                 string=time.strftime("%H:%M:%S")+" "+nSname+" strory created"
                 self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
                 self.analStory['values']=list(self.loadStored.keys()) #update analStory Combobox
-        except ValueError:
+                self.toPlotStory['values']=list(self.loadStored.keys()) #update toPlotStory Combobox
+        except TypeError:
             string=time.strftime("%H:%M:%S")+" Error: fill all fields requested"
         self.logError.insert(tk.INSERT,string+"\n")
              
@@ -274,6 +276,7 @@ class MainWindow(tk.Tk):
         del self.loadStored[key]
         self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
         self.analStory['values']=list(self.loadStored.keys()) #update analStory Combobox
+        self.toPlotStory['values']=list(self.loadStored.keys()) #update toPlotStory Combobox
         string=time.strftime("%H:%M:%S")+" "+key+" strory deleted"
         self.logError.insert(tk.INSERT,string+"\n")
         
@@ -318,7 +321,9 @@ class MainWindow(tk.Tk):
             
     def analize(self):
         key = self.st2Anal.get()
-        self.loadStored[key].analize(self.dataList,self.matStored[self.matAnal.get()].sigmaT,self.matStored[self.matAnal.get()].sigmaR)
+        self.loadStored[key].analize(self.dataList,self.matStored[self.matAnal.get()].sigmaT,self.matStored[self.matAnal.get()].sigmaR, self.Rmethod.get())
         
-        
+    def plotStory(self):
+        key=self.st2Plot.get()
+        self.loadStored[key].plot()
           

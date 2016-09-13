@@ -10,6 +10,7 @@ Analysis class library
 import file#, database
 import countingMethod as cm
 import predictionMethod as pm
+import pyqtgraph as pg
 
 class loadStory:
     """
@@ -22,16 +23,15 @@ class loadStory:
     def __init__(self, fileName, header, fileType='.xlsx', sheet='Carichi', column=1, limit=None):
         if fileType=='.xlsx':   
             try: 
-                self.spectrum=file.readXls(fileName, sheet, column, header)
-                if limit:
-                    self.extreme = cm.reverses(self.spectrum[:limit])
-                else:
-                    self.extreme = cm.reverses(self.spectrum)
-                self.Error='00' #no error
+                self.spectrum=file.readXls(fileName, sheet, column, header, limit)
+                self.extreme=cm.reverses(self.spectrum)
+                self.Error=0 #no error
             except (IndexError):
-                self.Error='01' #columns doesn't exist
+                self.Error=1 #columns doesn't exist
             except(KeyError):
-                self.error='02' #sheet doesn't exist
+                self.Error=2 #sheet doesn't exist
+            except(TypeError):
+                self.Error=3 #wrong column, no numbers
     
     def counting(self, cMethod="Rainflow", hMethod="mean"):
         """
@@ -53,6 +53,17 @@ class loadStory:
             self.block=cm.histoMean(self.ranges)
         else:
             self.block=cm.histo(self.ranges)
+            
+    def errorsCheck(self, dt):
+        if self.Error==1:
+            string=string=dt+" Error: the column doesn't exist! Story won't be created"
+        elif self.Error==2:
+            string=dt+" Error: the sheet doesn't exist! Story won't be created"
+        elif self.Error==3:
+            string=dt+" Error: Content of selected cells is not number"
+        else:
+            string='Unknown Error'
+        return string
     
     
     def packing(self,mR,mM,v):
@@ -67,7 +78,7 @@ class loadStory:
     def save(self, fileName, sheet):
         file.writeXls(fileName, self.block, sheet)
     
-    def analize(self, data,_sRT,_sRC):
+    def analize(self, data,_sRT,_sRC,Rmethod):
         """
         it analize the load story for given material
         data = groups selected
@@ -101,9 +112,16 @@ class loadStory:
                     except ValueError:
                         _R=int(data[0][0])
                         _smax90R=float(data[0][2])*_sR
-                        sa90=pm.genHaigh(_sR,_R,_smax90R,R,sa)
+                        sa90=pm.genHaigh(_sR,_R,_smax90R,R,sa,Rmethod)
                 D=D+pm.miner(_sR,sa90,sa,N)
                 print(sa90,D)
+                
+    def plot(self):
+        """
+        It will plot extreme values of the spectrum
+        TODO: create the block cycle array to plot
+        """
+        pg.plot(self.extreme, symbol='o')
 
 class matList:
     def __init__(self, id_n, name, sigmaT, matrix, fiber,sigmaR):

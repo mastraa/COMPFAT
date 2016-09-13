@@ -14,7 +14,7 @@ from decimal import *
 
 
 
-def readXls(nameFile, sheet, column, header):
+def readXls(nameFile, sheet, column, header, limit=None):
     """
     Read values from excel 2010 files column
     """
@@ -22,9 +22,17 @@ def readXls(nameFile, sheet, column, header):
     wb = load_workbook(filename = nameFile, read_only=True, data_only=True)
     #data_only to read current values of cells and not formulas
     sheet_ranges = wb[sheet]
-    f=sheet_ranges.columns[column]
-    for i in range (len(f)-header):
-        a.append(f[i+header].value)
+    
+    if limit and limit <=1000:#more than 1000 too slow!!!
+        for i in range(header+1,header+limit):
+            a.append(float(sheet_ranges.cell(row = i, column = column).value))
+            #the first cell with cell is 1-1
+    else:
+        f=sheet_ranges.columns[column-1]#the first cell with columns is 0-0
+        for i in range (len(f)-header):
+            a.append(f[i+header].value)
+        if limit:
+            a=a[:limit]
     return a
     
 def writeXls(nameFile, h, sheetName="Foglio1"):

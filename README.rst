@@ -19,11 +19,17 @@ ASTM E1049-85 (2005)
 
 
 Database data:
-
 for R value:
 if one row is valid for more than one R value you have two row with the first and the last R
 for R<-1 you see a row for R=-1 and one for R=-99
 infinite it's like 99/-99
+
+R finding:
+If wanted R is not available in group there are two case:
+there is the material group with R=-1 and you can apply Haigh method
+there is a group with casual R so we consider that sa-sm curve is rect, we find m and q.
+Now Haigh method use Haigh formula
+R method use the intersection of R_curve and Haigh sa-sm diagram to find smax, using applied sm we can find sa for our case. (at the moment not available)
 
 
 GUI features
@@ -32,27 +38,28 @@ Load Data Page:
 
 File setting area:
 Users can set the extension of the file, open a file (at the moment only xlsx are available)
-Once file is opened users can choose the page and set the column in which loads are stored and
-even the presence of header
-Remember column A is number 0, B-1...
+Once file is opened users can choose the page and set the column in which loads are stored and even the presence of header
+First column is 1
 At the moment users must use header also to avoid the reading of the firsts rows
 
 Counting method area:
 Users can choose counting method
+You can choose also if pack datas with similar value, input value are the dimension of the interval in which you pack datas.
+Radio button let you choose if the value of packed data to use in the analysis will be the median value of the group or the max value. Suggest to to use median if you know that the main groups are numerous.
+If you don’t know or you have little group you may use max value in emergency advance. 
 
 View Data area:
 Users can create a story giving a name to it
-The lower limit is not available (see header istructions)
+The lower limit is not available (see header instructions)
 Max limit is the number of the row that will be considered
 Many stories could be created and stored in the program
-(at the moment you can't delete them)
+Below you can also delete stories
 
 Users can also save all stories created to a file
-file name and extension could be setted, page name will be the story name
+file name and extension could be set, page name will be the story name
 At the moment only xlsx file are available
 
-Below the widget to delete a story, select the story name set before and click DELETE
-
+You can plot datas, at the moment it will only show extreme values plot
 
 Material Data Page:
 
@@ -62,14 +69,16 @@ Search button show in the table below the list of material saved with that kind 
 Save Selected Material Button saves the material you selected in the table, now
 that item will be available in Analysis page
 
-
-
-
-
-Adding new materials:
+Adding new materials:???
 Name and id must be unique, id is auto assigned, name is not. In case of egual
 name the query will be ignored.
 
+Analysis page:
+In this page the user will choose material and load story to use.
+When you choose material in the box on the top you have to search for groups, groups will be shown on the table below.
+At the moment R method choice isn’t available.
+Below you must choose the load story to analyze and you can start analysis.
+
 
 Log Monitor:
-It shows users actions
+It shows users actions: saving, creation, deleting, errors

@@ -257,7 +257,7 @@ def packRange(ranges, dim, v):
             del(block[t])
         else:
             t=t+1
-    for item in block:
+    """for item in block:
         print(item)#debug"""
     return block
     
@@ -266,7 +266,6 @@ def packMedian(ranges, dim, v):
     Pack cycles with similan median
     Call only after a packRange
     """
-    print(v)
     block=[]
     for item in ranges:#for every range value
         z=[]
@@ -295,7 +294,7 @@ def packMedian(ranges, dim, v):
                 del item[1][t]
             else:
                 t=t+1
-    for item in block:
+    """for item in block:
         print(item)#debug"""
     return block
             
