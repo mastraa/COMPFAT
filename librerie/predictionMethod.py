@@ -25,7 +25,7 @@ def genHaigh(_sR, _R, _smax, R, sa, method='haigh'):
     m,q=rect2([_sm,_sa],[_sR,0])
     
     sm=(1+R)/(1-R)*sa    
-    if method == 'R':
+    if method == 'R_method':
         #R_method
         _sa=q*_sR/(_sR+q*(1+R)/(1-R))#intersection of Haigh and R curve
         _sm=xRect(_sa,m,q)
@@ -48,9 +48,13 @@ def miner(_sR, _sa, sa, N):
     _sa = database or haigh output amplitude for incipient collpase
     sa = applied amplitude
     """
-    m,q=rect2([0,log10(_sR)],[log10(2*10**6),log10(_sa)])
-    Nmax=10**(xRect(log10(sa),m,q))
-    return N/Nmax
+    if _sa<0:#sm is higher than the max value for sigma
+        D=1.1
+    else:
+        m,q=rect2([0,log10(_sR)],[log10(2*10**6),log10(_sa)])
+        Nmax=10**(xRect(log10(sa),m,q))
+        D=N/Nmax
+    return D
 
 def rect2(p1,p2):
     """

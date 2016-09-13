@@ -3,6 +3,8 @@
 Created on Tue Jul 26 13:58:33 2016
 
 @author: mastraa
+
+Last update 13/09/2016
 """
 
 import tkinter as tk
@@ -168,7 +170,7 @@ class MainWindow(tk.Tk):
         self.behaviour=tk.StringVar()
         self.architecture=tk.StringVar()
         self.Rmethod=tk.StringVar()
-        self.dataList=[]#list of alla groups of selected materials to pass to analize function
+        self.dataList=[]#list of all groups of selected materials to pass to analize function
         self.st2Anal=tk.StringVar()
         
         beh=ttk.LabelFrame(p3,text="Analysis Setting")
@@ -176,18 +178,18 @@ class MainWindow(tk.Tk):
         ttk.Label(beh,text="Material").grid(column=0,row=0)
         self.matSet = ttk.Combobox(beh, width=20, textvariable=self.matAnal, state='readonly')
         self.matSet.grid(column=1, row=0)
-        ttk.Label(beh,text="Behaviour").grid(column=3,row=0)
+        ttk.Label(beh,text="Behaviour").grid(column=2,row=0)
         self.behSet = ttk.Combobox(beh, width=5, textvariable=self.behaviour, state='readonly')
-        self.behSet.grid(column=4, row=0)
+        self.behSet.grid(column=3, row=0)
         self.behSet['values']=['FD','MD']
         self.archSet = ttk.Combobox(beh, width=5, textvariable=self.architecture, state='readonly')
-        self.archSet.grid(column=5, row=0)
+        self.archSet.grid(column=4, row=0)
         self.archSet['values']=['UD','W']
-        ttk.Button(beh,text="Show Group", command=self.showGroup).grid(row=0,column=6)
-        ttk.Label(beh,text="R method").grid(column=7,row=0)
+        ttk.Button(beh,text="Show Group", command=self.showGroup).grid(row=0,column=5)
+        ttk.Label(beh,text="Amplitude stimation").grid(column=6,row=0)
         self.RmethodSet = ttk.Combobox(beh, width=8, textvariable=self.Rmethod, state='readonly')
-        self.RmethodSet.grid(column=8, row=0)
-        self.RmethodSet['values']=['Haigh','R method'] #interpolation method will be available soon
+        self.RmethodSet.grid(column=7, row=0)
+        self.RmethodSet['values']=['Haigh','R_method'] #interpolation method will be available soon
         
         self.groupTree=ttk.Treeview(beh,selectmode="extended",columns=('1','2','3','4','5','6','7','8','9','10'))
         self.groupTree.heading("#0", text=" ")
@@ -253,7 +255,7 @@ class MainWindow(tk.Tk):
                 self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
                 self.analStory['values']=list(self.loadStored.keys()) #update analStory Combobox
                 self.toPlotStory['values']=list(self.loadStored.keys()) #update toPlotStory Combobox
-        except TypeError:
+        except ValueError:
             string=time.strftime("%H:%M:%S")+" Error: fill all fields requested"
         self.logError.insert(tk.INSERT,string+"\n")
              
@@ -314,14 +316,20 @@ class MainWindow(tk.Tk):
         fiber=str(self.matStored[name].fiber)
         matrix=str(self.matStored[name].matrix)
         groups=database.searchAllGroups(fiber, matrix, beh, arch)
+        for i in self.groupTree.get_children():
+            self.groupTree.delete(i)
         for item in groups:
             self.groupTree.insert('','end',values=(item[1],item[3],item[4],item[5],item[6],item[7],item[8],item[9],'qualità',item[2]))
             self.dataList.append([item[2],item[7],item[8]])
-            print(self.dataList)
             
     def analize(self):
+        """
+        TODO: disconnect damage value from the load story class!
+        """
         key = self.st2Anal.get()
         self.loadStored[key].analize(self.dataList,self.matStored[self.matAnal.get()].sigmaT,self.matStored[self.matAnal.get()].sigmaR, self.Rmethod.get())
+        string=time.strftime("%H:%M:%S")+" "+key+"  analized with Miner and "+self.Rmethod.get()+" total damage is: "+str(self.loadStored[key].D)
+        self.logError.insert(tk.INSERT,string+"\n")
         
     def plotStory(self):
         key=self.st2Plot.get()

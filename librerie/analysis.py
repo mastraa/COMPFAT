@@ -87,7 +87,7 @@ class loadStory:
         """
         _sRT=int(_sRT)
         _sRC=int(_sRC)
-        D=0
+        self.D=0
         Rlist=[]
         for j in data:
             Rlist.append(j[0])
@@ -113,8 +113,7 @@ class loadStory:
                         _R=int(data[0][0])
                         _smax90R=float(data[0][2])*_sR
                         sa90=pm.genHaigh(_sR,_R,_smax90R,R,sa,Rmethod)
-                D=D+pm.miner(_sR,sa90,sa,N)
-                print(sa90,D)
+                self.D=self.D+pm.miner(_sR,sa90,sa,N)
                 
     def plot(self):
         """

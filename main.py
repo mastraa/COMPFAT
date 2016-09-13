@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
+Fatigue Test
 
-This is a temporary script file.
+BETA version 0.0.1
+
+Andrea Mastrangelo
+Ing.Paolo Carraro
+Prof.Marino Quaresimin
 """
 
 # cd /Users/mastraa/Documents/Andrea/Università/Magistrale/Tesi/fatigue
