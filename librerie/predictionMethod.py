@@ -13,7 +13,7 @@ def haigh(_sa,_sR, sm):
     """
     return _sa*(1-sm/_sR)
 
-def genHaigh(_sR, _R, _smax, R, sa, method='haigh'):
+def Rmethod(_sR, _R, _smax, R, sa):
     """
     Haigh diagrama method starting from any R value
     sm = median value of applicated load
@@ -25,22 +25,21 @@ def genHaigh(_sR, _R, _smax, R, sa, method='haigh'):
     m,q=rect2([_sm,_sa],[_sR,0])
     
     sm=(1+R)/(1-R)*sa    
-    if method == 'R_method':
-        #R_method
-        _sa=q*_sR/(_sR+q*(1+R)/(1-R))#intersection of Haigh and R curve
-        _sm=xRect(_sa,m,q)
-        result=_sm+_sa-sm
-    else:
-        result=haigh(q,_sR,sm)#classic haigh with found q
+    _sa=q*_sR/(_sR+q*(1+R)/(1-R))#intersection of Haigh and R curve
+    _sm=xRect(_sa,m,q)
+    result=_sm+_sa-sm
     return result
 
-
-def interpolationR():
+def interpolationR(p1,p2,R,_sR,sa):
     """
-    Interpolated curve with 3 or more group values
-    TODO: study the method
+    Interpolation of the rect beetween major and minor nearest values
     """
-    pass
+    m,sa90=rect2(p1,p2)
+    sm=(1+R)/(1-R)*sa 
+    _sa=sa90*_sR/(_sR+sa90*(1+R)/(1-R))#intersection of Haigh and R curve
+    _sm=xRect(_sa,m,sa90)
+    result=_sm+_sa-sm
+    return result
 
 def miner(_sR, _sa, sa, N):
     """

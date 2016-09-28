@@ -50,3 +50,25 @@ def searchAllGroups(fibre, matrix, beh, arch):
     cursor.execute("SELECT * FROM matGroup WHERE fibre=? AND behav=? AND arch=? AND matrix=?",(fibre, beh, arch, matrix))
     result = cursor.fetchall()
     return result
+    
+def nextMin(value,lista):
+    """
+    value is the aim
+    lista: list ordered from min to max
+    return R value or NameError
+    """
+    for i in lista:
+        if i>value:
+            return i
+    raise NameError('No value')
+
+def nextMax(value,lista):
+    """
+    value is the aim
+    lista: list ordered from min to max
+    return R value or NameError
+    """
+    for i in lista:
+        if i<value:
+            return i
+    raise NameError('No value')

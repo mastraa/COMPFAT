@@ -189,7 +189,7 @@ class MainWindow(tk.Tk):
         ttk.Label(beh,text="Amplitude stimation").grid(column=6,row=0)
         self.RmethodSet = ttk.Combobox(beh, width=8, textvariable=self.Rmethod, state='readonly')
         self.RmethodSet.grid(column=7, row=0)
-        self.RmethodSet['values']=['Haigh','R_method'] #interpolation method will be available soon
+        self.RmethodSet['values']=['Interpol.','R_method'] #interpolation method will be available soon
         
         self.groupTree=ttk.Treeview(beh,selectmode="extended",columns=('1','2','3','4','5','6','7','8','9','10'))
         self.groupTree.heading("#0", text=" ")
@@ -327,8 +327,11 @@ class MainWindow(tk.Tk):
         TODO: disconnect damage value from the load story class!
         """
         key = self.st2Anal.get()
-        self.loadStored[key].analize(self.dataList,self.matStored[self.matAnal.get()].sigmaT,self.matStored[self.matAnal.get()].sigmaR, self.Rmethod.get())
-        string=time.strftime("%H:%M:%S")+" "+key+"  analized with Miner and "+self.Rmethod.get()+" total damage is: "+str(self.loadStored[key].D)
+        try:
+            self.loadStored[key].analize(self.dataList,self.matStored[self.matAnal.get()].sigmaT,self.matStored[self.matAnal.get()].sigmaR, self.Rmethod.get())
+            string=time.strftime("%H:%M:%S")+" "+key+"  analized with Miner and "+self.Rmethod.get()+" total damage is: "+str(self.loadStored[key].D)
+        except (NameError):
+            string=time.strftime("%H:%M:%S")+"You don't have the necessary groups to use interpolation method"
         self.logError.insert(tk.INSERT,string+"\n")
         
     def plotStory(self):

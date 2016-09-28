@@ -11,6 +11,7 @@ import file#, database
 import countingMethod as cm
 import predictionMethod as pm
 import pyqtgraph as pg
+import database
 
 class loadStory:
     """
@@ -104,16 +105,24 @@ class loadStory:
                 try:
                     x=Rlist.index(R)#if we have the group with same R
                     sa90=data[x][2]*_sR*(1+R)/2
-                except ValueError:#no correspondent group
-                    try:
-                        x=Rlist.index(-1)#we have group for R=-1
-                        _sa=data[x][2]*_sR#R=-1 so (1+R)/2=0
-                        sa90=pm.haigh(_sa,R,sm)
-                    except ValueError:
+                except ValueError:#if we don't
+                    if Rmethod=="Interpol.":
+                        RlistOrd=Rlist.sort()
+                        try:
+                            x=Rlist.index(database.nextMin(R,RlistOrd))
+                            sa90m=data[x][2]*_sR*(1-R)/2
+                            sm_m=(1+R)*data[x][2]*_sR/2
+                            x=Rlist.index(database.nextMin(R,RlistOrd.reverse()))
+                            sa90M=data[x][2]*_sR*(1-R)/2
+                            sm_M=(1+R)*data[x][2]*_sR/2
+                            sa90=pm.interpolationR([sa90m,sm_m],[sa90M,sm_M],R,_sR,sa)
+                        except (NameError):
+                            'no valore'
+                    else:#Rmethod
                         _R=int(data[0][0])
                         _smax90R=float(data[0][2])*_sR
-                        sa90=pm.genHaigh(_sR,_R,_smax90R,R,sa,Rmethod)
-                self.D=self.D+pm.miner(_sR,sa90,sa,N)
+                        sa90=pm.Rmethod(_sR,_R,_smax90R,R,sa)
+            self.D=self.D+pm.miner(_sR,sa90,sa,N)
                 
     def plot(self):
         """

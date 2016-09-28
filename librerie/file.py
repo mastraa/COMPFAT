@@ -40,7 +40,7 @@ def writeXls(nameFile, h, sheetName="Foglio1"):
     Write h values to excel file
     now it will overwrite an already existing file
     TODO: generalize function
-    TODO: check if file already exists
+    TODO: print s_max/min, R
     """
     if fileExist(nameFile):
         wb=load_workbook(filename=nameFile)#load file
@@ -52,10 +52,10 @@ def writeXls(nameFile, h, sheetName="Foglio1"):
     ws['C1']="mean"
     i=2
     for item in h:
-        ws['A'+str(i)]=item[0]
+        ws['A'+str(i)]=item[0]#range
         for value in item[1]:
-            ws['B'+str(i)]=value[0]
-            ws['C'+str(i)]=value[1]
+            ws['B'+str(i)]=value[0]#cycles
+            ws['C'+str(i)]=value[1]#mean
             i=i+1
     wb.save(nameFile)#save file
     
