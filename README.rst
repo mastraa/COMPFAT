@@ -76,7 +76,11 @@ name the query will be ignored.
 Analysis page:
 In this page the user will choose material and load story to use.
 When you choose material in the box on the top you have to search for groups, groups will be shown on the table below.
-At the moment R method choice isn’t available.
+If R is different from any group you can approximate it in two ways:
+interpolation between the two nearest values
+using a sort of Haigh diagram
+we suggest to use the second one if you have only one group for that material.
+The first one raise an error if you are out of the range of R group.
 Below you must choose the load story to analyze and you can start analysis.
 
 

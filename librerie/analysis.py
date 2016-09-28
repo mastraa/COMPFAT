@@ -91,6 +91,7 @@ class loadStory:
         self.D=0
         Rlist=[]
         for j in data:
+            print (data)
             Rlist.append(j[0])
         for item in self.block:#every amplitude
             sa=item[0]#cycle amplitude
@@ -106,18 +107,15 @@ class loadStory:
                     x=Rlist.index(R)#if we have the group with same R
                     sa90=data[x][2]*_sR*(1+R)/2
                 except ValueError:#if we don't
-                    if Rmethod=="Interpol.":
+                    if Rmethod=="Interpol":
                         RlistOrd=Rlist.sort()
-                        try:
-                            x=Rlist.index(database.nextMin(R,RlistOrd))
-                            sa90m=data[x][2]*_sR*(1-R)/2
-                            sm_m=(1+R)*data[x][2]*_sR/2
-                            x=Rlist.index(database.nextMin(R,RlistOrd.reverse()))
-                            sa90M=data[x][2]*_sR*(1-R)/2
-                            sm_M=(1+R)*data[x][2]*_sR/2
-                            sa90=pm.interpolationR([sa90m,sm_m],[sa90M,sm_M],R,_sR,sa)
-                        except (NameError):
-                            'no valore'
+                        x=Rlist.index(database.nextMin(R,RlistOrd))
+                        sa90m=data[x][2]*_sR*(1-R)/2
+                        sm_m=(1+R)*data[x][2]*_sR/2
+                        x=Rlist.index(database.nextMin(R,RlistOrd.reverse()))
+                        sa90M=data[x][2]*_sR*(1-R)/2
+                        sm_M=(1+R)*data[x][2]*_sR/2
+                        sa90=pm.interpolationR([sa90m,sm_m],[sa90M,sm_M],R,_sR,sa)
                     else:#Rmethod
                         _R=int(data[0][0])
                         _smax90R=float(data[0][2])*_sR
