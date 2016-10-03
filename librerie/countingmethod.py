@@ -190,7 +190,7 @@ def peakValley(s):
     ranges=[]
     for i in range(0,len(pv[0])):
         try:
-            ranges.append([abs(pv[0][i]-pv[1][i]),1,(pv[0][i]-pv[1][i])/2])
+            ranges.append([abs(pv[0][i]-pv[1][i]),1,(pv[0][i]+pv[1][i])/2])
         except IndexError:#pv[0] greater than pv[1]
             ranges.append([abs(pv[0][i]),0.5,(pv[0][i])/2])
     if i < (len(pv[1])-1):#pv[1] greater than pv[0]
