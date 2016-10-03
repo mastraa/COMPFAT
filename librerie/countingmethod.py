@@ -170,32 +170,32 @@ def peakValley(s):
     for item in s:
         pv[b].append(item)
         b=not b
-    pv[0].sort()
-    pv[0].reverse()
-    pv[1].sort()
+    pv[0].sort()#all peak
+    pv[0].reverse()#from maximum to minimum
+    pv[1].sort()#all valley
     i=0
     for item in pv[0]:
         if item > Mean:
             i=i+1
         else:
             break
-    pv[0]=pv[0][:i]
+    pv[0]=pv[0][:i]#delete all peak below median value
     i=0
     for item in pv[1]:
         if item < Mean:
             i=i+1
         else:
             break
-    pv[1]=pv[1][:i]
+    pv[1]=pv[1][:i]#delete all valley above median value
     ranges=[]
     for i in range(0,len(pv[0])):
         try:
-            ranges.append([abs(pv[0][i]-pv[1][i]),1,Mean])
-        except IndexError:
-            ranges.append([abs(pv[0][i]),0.5,Mean])
-    if i < (len(pv[1])-1):
+            ranges.append([abs(pv[0][i]-pv[1][i]),1,(pv[0][i]-pv[1][i])/2])
+        except IndexError:#pv[0] greater than pv[1]
+            ranges.append([abs(pv[0][i]),0.5,(pv[0][i])/2])
+    if i < (len(pv[1])-1):#pv[1] greater than pv[0]
         for a in range(i,len(pv[1])):
-            ranges.append([abs(pv[1][a]),0.5,Mean])
+            ranges.append([abs(pv[1][a]),0.5,(pv[1][a])/2])
     return ranges
 
 def simpleRange(s):
