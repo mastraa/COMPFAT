@@ -265,13 +265,22 @@ def packMedian(ranges, dim, v):
     """
     Pack cycles with similan median
     Call only after a packRange
+    TODO:perde qualche ciclo!!!
+    """
+    """
+    a=0
+    for item in ranges:
+        for i in item[1]:
+            a=a+i[0]
+    print(a)
+    print (ranges)
     """
     block=[]
     for item in ranges:#for every range value
         z=[]
         block.append([item[0],[]])#insert amplitude value
         for i in item[1]:
-            z.append(round(i[1]))
+            z.append(i[1])
         lim=min(z)
         max_m=max(z)
         if len(z)>1:#there are more than one block
@@ -296,6 +305,14 @@ def packMedian(ranges, dim, v):
                 t=t+1
     """for item in block:
         print(item)#debug"""
+    """
+    a=0
+    for item in block:
+        for i in item[1]:
+            a=a+i[0]
+    print(a)
+    print(block)
+    """
     return block
             
         
