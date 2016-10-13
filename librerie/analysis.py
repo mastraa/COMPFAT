@@ -91,7 +91,6 @@ class loadStory:
         self.D=0
         Rlist=[]
         for j in data:
-            print (data)
             Rlist.append(j[0])
         for item in self.block:#every amplitude
             sa=item[0]#cycle amplitude

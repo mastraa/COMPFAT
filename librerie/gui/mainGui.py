@@ -329,7 +329,10 @@ class MainWindow(tk.Tk):
         key = self.st2Anal.get()
         try:
             self.loadStored[key].analize(self.dataList,self.matStored[self.matAnal.get()].sigmaT,self.matStored[self.matAnal.get()].sigmaR, self.Rmethod.get())
-            string=time.strftime("%H:%M:%S")+" "+key+"  analized with Miner and "+self.Rmethod.get()+" total damage is: "+str(self.loadStored[key].D)
+            danno=self.loadStored[key].D
+            string=time.strftime("%H:%M:%S")+" "+key+"  analized with Miner and "+self.Rmethod.get()+" total damage is: "+str(danno)+"\n"
+            string_2="You can repeat this block "+str(danno**-1)+" times."
+            string=string+string_2
         except (NameError, TypeError):
             string=time.strftime("%H:%M:%S")+"You don't have the necessary groups to use interpolation method"
         self.logError.insert(tk.INSERT,string+"\n")

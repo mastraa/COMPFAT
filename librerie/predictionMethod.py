@@ -15,9 +15,12 @@ def haigh(_sa,_sR, sm):
 
 def Rmethod(_sR, _R, _smax, R, sa):
     """
-    Haigh diagrama method starting from any R value
+    From a group with any _R value it creates the _sm,_sa curve
+    it search the intersection with the rect with real R value
+    from intersection get the smax=_sm+_sa
+    from smax it deduce sa_amm knowing real sm: sa_amm=smax-sm
     sm = median value of applicated load
-    _* values are database data
+    _*: values are database data
     in case of sm<0 give compressive sR
     """
     _sm=_smax*(1+_R)/2 #median value of database data
@@ -26,7 +29,7 @@ def Rmethod(_sR, _R, _smax, R, sa):
     
     sm=(1+R)/(1-R)*sa    
     _sa=q*_sR/(_sR+q*(1+R)/(1-R))#intersection of Haigh and R curve
-    _sm=xRect(_sa,m,q)
+    _sm=xRect(_sa,m,q)#sm corrisp to the amplitude of intersection
     result=_sm+_sa-sm
     return result
 
