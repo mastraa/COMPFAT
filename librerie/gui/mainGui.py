@@ -10,6 +10,7 @@ Last update 13/09/2016
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fdialog
+from tkinter import messagebox as msg
 import tkinter.scrolledtext as ScrolledText
 import pyqtgraph as pg
 import time
@@ -18,9 +19,6 @@ import countingMethod as cm
 
 from openpyxl import load_workbook
 
-def prova(x,y, btn):
-    pg.plot(x, y, pen='r')
-    print(btn)
 
 class MainWindow(tk.Tk):
     """
@@ -33,6 +31,7 @@ class MainWindow(tk.Tk):
         self.configure(background="gray89")
         self.loadStored={}
         self.matStored={}
+        self.newMatWin=0
         
         master = ttk.Frame(self, name='master') # create Frame in self
         master.pack(fill=tk.BOTH) # fill both sides of the parent
@@ -140,6 +139,7 @@ class MainWindow(tk.Tk):
         self.matChoosen.grid(column=0, row=0)
         self.matChoosen['values']=lista
         ttk.Button(mat,text="Search", command=self.searchMat).grid(row=0,column=1)
+        ttk.Button(mat,text="New Matetial", command=self.newMat).grid(row=0,column=2)
         
         self.tree=ttk.Treeview(mat,selectmode="extended",columns=('1','2','3','4','5','6','7'))
         self.tree.heading("#0", text=" ")
@@ -309,7 +309,7 @@ class MainWindow(tk.Tk):
             self.tree.delete(i)
         materiale=str(self.material.get())
         for item in database.searchAll('matLib','fiber',materiale):
-            self.tree.insert('','end',values=(item[0],item[1],item[2],item[3], item[4],item[5],item[6]))
+            self.tree.insert('','end',values=(item[0],item[1],item[2],item[3], item[4],item[5],item[6]))#id, name, fiber, matrix, Rt, Rc, note
             
     def showGroup(self):
         """
@@ -356,3 +356,65 @@ class MainWindow(tk.Tk):
         key=self.st2Plot.get()
         self.loadStored[key].plot()
           
+    def newMat(self):
+        """
+        Possibility to insert a temporary material
+        or add material into database
+        """
+        if self.newMatWin==1:
+            pass
+        else:
+            self.newMatWin = 1
+            matWind(self, "Material data tools","400x200")
+            
+
+class matWind(tk.Toplevel):
+    """
+    """
+    def __init__(self, parent, title, size):
+        tk.Toplevel.__init__(self, parent)
+        self.title(title)
+        self.geometry(size)#x,y
+        self.resizable(0,0)
+        self.parent=parent
+        
+        self.name=tk.StringVar()
+        self.sRt=tk.StringVar()
+        self.sRc=tk.StringVar()
+        self.fiber=tk.StringVar()
+        self.matrix=tk.StringVar()
+        
+        ttk.Label(self,text="Name").grid(column=0,row=0)
+        ttk.Entry(self, textvariable=self.name, width=20).grid(column=1, row=0)
+        ttk.Label(self,text="fiber").grid(column=0,row=1)
+        ttk.Entry(self, textvariable=self.fiber, width=10).grid(column=1, row=1)
+        ttk.Label(self,text="matrix").grid(column=2,row=1)
+        self.matrixChoosen = ttk.Combobox(self, width=5, textvariable=self.matrix, state='readonly')
+        self.matrixChoosen.grid(column=3, row=1)
+        self.matrixChoosen['values']=('TS','TP')
+        ttk.Label(self,text="sRt").grid(column=0,row=2)
+        ttk.Entry(self, textvariable=self.sRt, width=5).grid(column=1, row=2)
+        ttk.Label(self,text="sRc").grid(column=2,row=2)
+        ttk.Entry(self, textvariable=self.sRc, width=5).grid(column=3, row=2)
+        ttk.Button(self, text="Insert", command=self.insert).grid(column=0,row=3)
+        ttk.Button(self, text="Save in DB", command=self.DBsave).grid(column=1,row=3)
+        ttk.Button(self, text="Quit", command=self.quitting).grid(column=2,row=3)
+        
+    def quitting(self):
+        """
+        Quit from material tools
+        """
+        self.parent.newMatWin=0
+        self.destroy()
+        
+    def insert(self):
+        name=self.name.get()
+        fiber=self.fiber.get().lower()
+        matrix=self.matrix.get()
+        sRt=int(self.sRt.get())
+        sRc=int(self.sRc.get())
+        self.parent.tree.insert('','end',values=('no ID',name,fiber,matrix,sRt,sRc,' '))#id, name, fiber, matrix, Rt, Rc, note
+    
+    def DBsave(self):
+        msg.showwarning("Disabled", "This functionality hasn't been implemented yet")
+        

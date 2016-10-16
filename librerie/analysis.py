@@ -104,7 +104,7 @@ class loadStory:
                 sm=i[1]#cycle median
                 N=i[0]#number of applied cycle fo that load
                 try:
-                    R=(sm-sa)/(sm+sa)
+                    R=round((sm-sa)/(sm+sa),1)
                     if R<-99:#-99 is group limit
                         R=-99
                     elif R>99:#99 is group limit

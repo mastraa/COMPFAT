@@ -23,6 +23,7 @@ for R value:
 if one row is valid for more than one R value you have two row with the first and the last R
 for R<-1 you see a row for R=-1 and one for R=-99
 infinite it's like 99/-99
+R is approximated to the decimal value
 
 R finding:
 If wanted R is not available in group there are two case (R_method and interpolation):
