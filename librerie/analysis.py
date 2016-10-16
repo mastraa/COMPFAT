@@ -22,6 +22,9 @@ class loadStory:
     ranges = three dimension array : range, number of cycles, mean values
     """
     def __init__(self, fileName, header, fileType='.xlsx', sheet='Carichi', column=1, limit=None):
+        """
+        TODO: no limit = ValueError-->make possible to read all value in the column
+        """
         if fileType=='.xlsx':   
             try: 
                 self.spectrum=file.readXls(fileName, sheet, column, header, limit)
@@ -85,41 +88,58 @@ class loadStory:
         data = groups selected
         _ = group material limit
         the group give the fatigue parameter to the max value
+        maybe you can read sa90, don't worry, we pass only choosen phi
         """
         _sRT=int(_sRT)
         _sRC=int(_sRC)
         self.D=0
         Rlist=[]
+        p=0
         for j in data:
             Rlist.append(j[0])
         for item in self.block:#every amplitude
-            sa=item[0]#cycle amplitude
+            sa=item[0]/2#cycle amplitude from range
             for i in item[1]:#every mean for amplitude
+                p=p+1
                 sm=i[1]#cycle median
                 N=i[0]#number of applied cycle fo that load
-                R=(sm-sa)/(sm+sa)
+                try:
+                    R=(sm-sa)/(sm+sa)
+                    if R<-99:#-99 is group limit
+                        R=-99
+                    elif R>99:#99 is group limit
+                        R=99
+                except ZeroDivisionError:
+                    R=-99
                 if sm>0:
-                    _sR=_sRT
+                    _sR=_sRT#considered as traction
                 else:
-                    _sR=_sRC
+                    _sR=_sRC#considered as compression
                 try:
                     x=Rlist.index(R)#if we have the group with same R
-                    sa90=data[x][2]*_sR*(1+R)/2
+                    sa90=data[x][1]*_sR*(1-R)/2
+                    print("ORA")
                 except ValueError:#if we don't
                     if Rmethod=="Interpol":
                         RlistOrd=Rlist.sort()
                         x=Rlist.index(database.nextMin(R,RlistOrd))
-                        sa90m=data[x][2]*_sR*(1-R)/2
-                        sm_m=(1+R)*data[x][2]*_sR/2
+                        sa90m=data[x][1]*_sR*(1-R)/2
+                        sm_m=(1+R)*data[x][1]*_sR/2
                         x=Rlist.index(database.nextMin(R,RlistOrd.reverse()))
-                        sa90M=data[x][2]*_sR*(1-R)/2
-                        sm_M=(1+R)*data[x][2]*_sR/2
-                        sa90=pm.interpolationR([sa90m,sm_m],[sa90M,sm_M],R,_sR,sa)
+                        sa90M=data[x][1]*_sR*(1-R)/2
+                        sm_M=(1+R)*data[x][1]*_sR/2
+                        sa90=pm.interpolationR([sa90m,sm_m],[sa90M,sm_M],R,sa)
                     else:#Rmethod
-                        _R=int(data[0][0])
-                        _smax90R=float(data[0][2])*_sR
+                        """
+                        TODO: possibility to choose which group
+                        """
+                        _R=data[0][0]#take the first point
+                        _smax90R=float(data[0][1])*_sR
                         sa90=pm.Rmethod(_sR,_R,_smax90R,R,sa)
-            self.D=self.D+pm.miner(_sR,sa90,sa,N)
+                minerD=pm.miner(_sR,sa90,sa,N)
+                self.D=self.D+minerD
+                print(p, sa, sm, sa90, minerD,self.D)
+                print()
                 
     def plot(self):
         """
@@ -129,10 +149,10 @@ class loadStory:
         pg.plot(self.extreme, symbol='o')
 
 class matList:
-    def __init__(self, id_n, name, sigmaT, matrix, fiber,sigmaR):
+    def __init__(self, id_n, name, sigmaT, matrix, fiber,sigmaC):
         self.id=id_n
         self.sigmaT=sigmaT
-        self.sigmaR=sigmaR
+        self.sigmaC=sigmaC
         self.matrix=matrix
         self.fiber=fiber
         self.name=name

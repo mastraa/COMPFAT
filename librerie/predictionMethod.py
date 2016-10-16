@@ -25,23 +25,25 @@ def Rmethod(_sR, _R, _smax, R, sa):
     """
     _sm=_smax*(1+_R)/2 #median value of database data
     _sa=_smax-_sm
-    m,q=rect2([_sm,_sa],[_sR,0])
+    m,q=rect2([_sm,_sa],[_sR,0])#haigh curve
     
-    sm=(1+R)/(1-R)*sa    
     _sa=q*_sR/(_sR+q*(1+R)/(1-R))#intersection of Haigh and R curve
     _sm=xRect(_sa,m,q)#sm corrisp to the amplitude of intersection
+
+    sm=(1+R)/(1-R)*sa#applied sm
     result=_sm+_sa-sm
     return result
 
-def interpolationR(p1,p2,R,_sR,sa):
+def interpolationR(p1,p2,R,sa):
     """
     Interpolation of the rect beetween major and minor nearest values
     """
-    m,sa90=rect2(p1,p2)
-    sm=(1+R)/(1-R)*sa 
-    _sa=sa90*_sR/(_sR+sa90*(1+R)/(1-R))#intersection of Haigh and R curve
-    _sm=xRect(_sa,m,sa90)
-    result=_sm+_sa-sm
+    m,q=rect2(p1,p2)#haigh curve
+    _sm=q/((1-R)/(1+R)-m)#intersection sm (we don't use *FORMULA of R_method because it may not pass in (sR,0)).
+    _sa=(1-R)/(1+R)*_sm #intersection sa
+    
+    sm=(1+R)/(1-R)*sa #applied sm
+    result=_sm+_sa-sm#_sm+_sa=_smax
     return result
 
 def miner(_sR, _sa, sa, N):

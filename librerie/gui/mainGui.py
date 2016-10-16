@@ -154,8 +154,8 @@ class MainWindow(tk.Tk):
         self.tree.column("#4",minwidth=0,width=50)
         self.tree.heading("#5", text="Rt [MPa]")
         self.tree.column("#5",minwidth=0,width=75)
-        self.tree.heading("#7", text="Rc [MPa]")
-        self.tree.column("#7",minwidth=0,width=75)
+        self.tree.heading("#6", text="Rc [MPa]")
+        self.tree.column("#6",minwidth=0,width=75)
         self.tree.heading("#7", text="Note")
         self.tree.column("#7",minwidth=0,width=200)
         self.tree.grid(column=0, columnspan=4, row=2)
@@ -172,23 +172,29 @@ class MainWindow(tk.Tk):
         self.Rmethod=tk.StringVar()
         self.dataList=[]#list of all groups of selected materials to pass to analize function
         self.st2Anal=tk.StringVar()
+        self.percent=tk.StringVar()#50-90%
         
         beh=ttk.LabelFrame(p3,text="Analysis Setting")
         beh.grid(column=0,row=1,sticky='W', padx=10, pady=10)
-        ttk.Label(beh,text="Material").grid(column=0,row=0)
+        ttk.Label(beh,text="Mat.").grid(column=0,row=0)
         self.matSet = ttk.Combobox(beh, width=20, textvariable=self.matAnal, state='readonly')
         self.matSet.grid(column=1, row=0)
-        ttk.Label(beh,text="Behaviour").grid(column=2,row=0)
+        ttk.Label(beh,text="Beh.").grid(column=2,row=0)
         self.behSet = ttk.Combobox(beh, width=5, textvariable=self.behaviour, state='readonly')
         self.behSet.grid(column=3, row=0)
         self.behSet['values']=['FD','MD']
+        ttk.Label(beh,text="Arch.").grid(column=4,row=0)
         self.archSet = ttk.Combobox(beh, width=5, textvariable=self.architecture, state='readonly')
-        self.archSet.grid(column=4, row=0)
+        self.archSet.grid(column=5, row=0)
         self.archSet['values']=['UD','W']
-        ttk.Button(beh,text="Show Group", command=self.showGroup).grid(row=0,column=5)
-        ttk.Label(beh,text="Amplitude stimation").grid(column=6,row=0)
+        ttk.Label(beh,text="%").grid(column=6,row=0)
+        self.perSet = ttk.Combobox(beh, width=5, textvariable=self.percent, state='readonly')
+        self.perSet.grid(column=7, row=0)
+        self.perSet['values']=['50','90']
+        ttk.Button(beh,text="Show Group", command=self.showGroup).grid(row=0,column=8)
+        ttk.Label(beh,text="Amp. stimation").grid(column=9,row=0)
         self.RmethodSet = ttk.Combobox(beh, width=8, textvariable=self.Rmethod, state='readonly')
-        self.RmethodSet.grid(column=7, row=0)
+        self.RmethodSet.grid(column=10, row=0)
         self.RmethodSet['values']=['Interpol','R_method'] #interpolation method will be available soon
         
         self.groupTree=ttk.Treeview(beh,selectmode="extended",columns=('1','2','3','4','5','6','7','8','9','10'))
@@ -213,7 +219,7 @@ class MainWindow(tk.Tk):
         self.groupTree.heading("#9", text="Quality")
         self.groupTree.column("#9",minwidth=0,width=100)
         self.groupTree.heading("#10", text="R")
-        self.groupTree.column("#10",minwidth=0,width=20)
+        self.groupTree.column("#10",minwidth=0,width=30)
         self.groupTree.grid(column=0, columnspan=6, row=2)
         
         ttk.Label(beh,text="Story").grid(column=0,row=3)
@@ -239,8 +245,8 @@ class MainWindow(tk.Tk):
         
     def createStory(self):
         """
-        add load story to the list
-        at the momento it will count with rainflow and save data to default file
+        create load story and add it to the list
+        now it saves data to default file
         """       
         try:
             newStory = analysis.loadStory(self.fileName, int(self.header.get()), fileType=str(self.fileType.get()), sheet=self.pageName.get(), column=int(self.column.get()), limit=int(self.maxLim.get()))  
@@ -264,6 +270,7 @@ class MainWindow(tk.Tk):
         """
         Save all story to file
         the page name will be the story name
+        TODO: insert also parameters!
         """
         for key in self.loadStored:
             self.loadStored[key].save('data/'+str(self.saveFile.get())+str(self.saveType.get()), key)
@@ -288,7 +295,7 @@ class MainWindow(tk.Tk):
         """
         for item in self.tree.selection():
             values = self.tree.item(item, 'values')
-            self.matStored[values[1]]=analysis.matList(values[0], values[1], values[4], values[3], values[2],values[5])
+            self.matStored[values[1]]=analysis.matList(values[0], values[1], values[4], values[3], values[2],values[5])#id,name,sT,matrix type,fiber name,sC
             self.matSet['values']=list(self.matStored.keys())
             string=time.strftime("%H:%M:%S")+" "+values[1]+" material saved"
             self.logError.insert(tk.INSERT,string+"\n")
@@ -316,28 +323,36 @@ class MainWindow(tk.Tk):
         fiber=str(self.matStored[name].fiber)
         matrix=str(self.matStored[name].matrix)
         groups=database.searchAllGroups(fiber, matrix, beh, arch)
+        self.dataList=[]
         for i in self.groupTree.get_children():
             self.groupTree.delete(i)
         for item in groups:
             self.groupTree.insert('','end',values=(item[1],item[3],item[4],item[5],item[6],item[7],item[8],item[9],'qualità',item[2]))
-            self.dataList.append([item[2],item[7],item[8]])
+            if self.percent.get()=="50":
+                phi=item[7]#50%
+            else:
+                phi=item[8]#90%
+            self.dataList.append([item[2],phi])#R,phi
             
     def analize(self):
         """
         TODO: disconnect damage value from the load story class!
         """
-        key = self.st2Anal.get()
+        key = self.st2Anal.get()#get the name of the story selected
         try:
-            self.loadStored[key].analize(self.dataList,self.matStored[self.matAnal.get()].sigmaT,self.matStored[self.matAnal.get()].sigmaR, self.Rmethod.get())
+            self.loadStored[key].analize(self.dataList,self.matStored[self.matAnal.get()].sigmaT,self.matStored[self.matAnal.get()].sigmaC, self.Rmethod.get())
             danno=self.loadStored[key].D
             string=time.strftime("%H:%M:%S")+" "+key+"  analized with Miner and "+self.Rmethod.get()+" total damage is: "+str(danno)+"\n"
             string_2="You can repeat this block "+str(danno**-1)+" times."
             string=string+string_2
         except (NameError, TypeError):
-            string=time.strftime("%H:%M:%S")+"You don't have the necessary groups to use interpolation method"
+            string=time.strftime("%H:%M:%S")+"You don't have the necessary groups to use interpolation method"#you have only one group or only group only in one side
         self.logError.insert(tk.INSERT,string+"\n")
         
     def plotStory(self):
+        """
+        TODO: improve graphical plotting
+        """
         key=self.st2Plot.get()
         self.loadStored[key].plot()
           

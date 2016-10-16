@@ -25,11 +25,13 @@ for R<-1 you see a row for R=-1 and one for R=-99
 infinite it's like 99/-99
 
 R finding:
-If wanted R is not available in group there are two case:
-there is the material group with R=-1 and you can apply Haigh method
-there is a group with casual R so we consider that sa-sm curve is rect, we find m and q.
-Now Haigh method use Haigh formula
-R method use the intersection of R_curve and Haigh sa-sm diagram to find smax, using applied sm we can find sa for our case. (at the moment not available)
+If wanted R is not available in group there are two case (R_method and interpolation):
+there is a group with casual R so we consider that sa-sm curve is rect, we find m and q,
+the second point to obtain the rect is (sR,0). We find the intersection (sm,sa)*.
+the other method interpolate the nearest group with lower and higher R to obtain (sm,sa)*.
+When we know * point we have smax* that is assumed to be egual to smax=sm+sa with sm of our block.
+
+Interpolation method seems to be the best way, but sometimes a group with higher sm has an higher fatigue ratio and the slope of the Haigh modified curve become positive. We suggest to check the groups before deciding.
 
 
 GUI features

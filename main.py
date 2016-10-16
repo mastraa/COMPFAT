@@ -35,5 +35,5 @@ print(storia.ranges)
 """
 
 
-radice=gui.MainWindow("Titolo","900x650")
+radice=gui.MainWindow("Titolo","970x650")#title, width_x_height
 radice.mainloop()
