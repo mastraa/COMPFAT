@@ -80,7 +80,7 @@ def histoMean(s):
                         char[0]=char[0]+value[1]#increment cycles value
                         flag=0#get down flag
                 if flag:#if mean values yet to be add
-                    item[1].append([value[1],round(value[2],4)])
+                    item[1].append([value[1],round(value[2],4),value[3]])
     """for item in temp_v:
         print (temp_v)"""#debug
     return temp_v
@@ -91,6 +91,9 @@ def rearrangeMax(serie):
     """
     maxPos=serie.index(max(serie))
     return serie[maxPos:]+serie[:maxPos]+serie[maxPos:maxPos+1]
+
+def getR(sa,sm):
+    return round(((sm-sa)/(sm+sa)),1)
 
 def rainflow(serie):#s = serie of peak and valley
     """
@@ -112,19 +115,27 @@ def rainflow(serie):#s = serie of peak and valley
             #create ranges
             X=round(abs(s[i]-s[i-1]),4)
             Y=round(abs(s[i-1]-s[i-2]),4)
-            #print (i,X,Y)
-            #print(s)
             if X>=Y:
                 if i == 2: #range Y contains the starting point
-                    ranges.append([Y,0.5,round((s[i-1]+s[i-2])/2,4)])
+                    sa=Y/2
+                    sm=round((s[i-1]+s[i-2])/2,4)
+                    R=getR(sa,sm)
+                    ranges.append([Y,0.5,sm,R])
                     del(s[0]) #deleting starting point
                     i=i-1 #cause to reducing s lenght
                 else:
-                    ranges.append([Y,1.0,round((s[i-1]+s[i-2])/2,4)])
+                    sa=Y/2
+                    sm=round((s[i-1]+s[i-2])/2,4)
+                    R=getR(sa,sm)
+                    ranges.append([Y,1.0,sm,R])
                     del(s[i-2:i]) #discarding Y peak and valley
                     i=i-3 #case to reducing s lenght of 2, but not reread (see position of i increment)
-    for i in range (1,len(s)):
-        ranges.append([abs(s[i]-s[i-1]),0.5,round((s[i]+s[i-1])/2,4)])
+    for i in range (0,len(s)):
+        Y=abs(s[i]-s[i-1])
+        sa=Y/2
+        sm=round((s[i]+s[i-1])/2,4)
+        R=getR(sa,sm)
+        ranges.append([Y,0.5,sm,R])
     return ranges 
 
 def simplyRainflow(serie):
@@ -147,11 +158,18 @@ def simplyRainflow(serie):
             #print (i,X,Y)
             #print(s)
             if X>=Y:
-                ranges.append([Y,1.0,round((s[i-1]+s[i-2])/2,4)])
+                sa=Y/2
+                sm=round((s[i-1]+s[i-2])/2,4)
+                R=getR(sa,sm)
+                ranges.append([Y,1.0,sm,R])
                 del(s[i-2:i]) #discarding Y peak and valley
                 i=i-3 #case to reducing s lenght of 2, but not reread (see position of i increment)
     for i in range (1,len(s)):
-        ranges.append([abs(s[i]-s[i-1]),0.5,round((s[i]+s[i-1])/2,4)])
+        Y=abs(s[i]-s[i-1])
+        sa=Y/2
+        sm=round((s[i]+s[i-1])/2,4)
+        R=getR(sa,sm)
+        ranges.append([Y,0.5,sm,R])
     return ranges
     
 def peakValley(s):
@@ -190,12 +208,24 @@ def peakValley(s):
     ranges=[]
     for i in range(0,len(pv[0])):
         try:
-            ranges.append([abs(pv[0][i]-pv[1][i]),1,(pv[0][i]+pv[1][i])/2])
+            Y=abs(pv[0][i]-pv[1][i])
+            sa=Y/2
+            sm=(pv[0][i]+pv[1][i])/2
+            R=getR(sa,sm)
+            ranges.append([Y,1,sm,R])
         except IndexError:#pv[0] greater than pv[1]
-            ranges.append([abs(pv[0][i]),0.5,(pv[0][i])/2])
+            Y=abs(pv[0][i])
+            sa=Y/2
+            sm=(pv[0][i])/2
+            R=getR(sa,sm)
+            ranges.append([Y,0.5,sm,R])
     if i < (len(pv[1])-1):#pv[1] greater than pv[0]
         for a in range(i,len(pv[1])):
-            ranges.append([abs(pv[1][a]),0.5,(pv[1][a])/2])
+            Y=abs(pv[1][a])
+            sa=Y/2
+            sm=(pv[1][a])/2
+            R=getR(sa,sm)
+            ranges.append([Y,0.5,sm,R])
     return ranges
 
 def simpleRange(s):
@@ -206,7 +236,11 @@ def simpleRange(s):
     """
     ranges=[]
     for i in range (1,len(s)):
-        ranges.append([abs(s[i]-s[i-1]),0.5,(s[i]+s[i-1])/2])
+        Y=abs(s[i]-s[i-1])
+        sa=Y/2
+        sm=(s[i]+s[i-1])/2
+        R=getR(sa,sm)
+        ranges.append([Y,0.5,sm,R])
     return ranges
 
 def packRange(ranges, dim, v):
@@ -237,6 +271,7 @@ def packRange(ranges, dim, v):
                 j=j+1#it will exclude used ranges
         x=x-dim
         i=i+1
+        #print(block)
     """    
     previous loop will lose last ranges if their value is near to zero
     because the lower limit of next interval would be negative
@@ -291,9 +326,9 @@ def packMedian(ranges, dim, v):
                         c=c+i[0]
                 lim=lim+dim
                 if v == 1:#median value
-                    block[-1][1].append([c,lim+dim/2])
+                    block[-1][1].append([c,lim+dim/2,i[2]])
                 else:#max value
-                    block[-1][1].append([c,lim+dim])
+                    block[-1][1].append([c,lim+dim,i[2]])
         else:
             block[-1][1]=item[1]
     for item in block:

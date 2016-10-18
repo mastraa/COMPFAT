@@ -62,7 +62,7 @@ def writeXls(nameFile, h, sheetName="Foglio1"):
             s_min=value[1]-item[0]/2
             ws['D'+str(i)]=s_max#s_max
             ws['E'+str(i)]=s_min#s_min
-            ws['F'+str(i)]=round(s_min/s_max,1)#R
+            ws['F'+str(i)]=value[2]#R
             i=i+1
     wb.save(nameFile)#save file
     

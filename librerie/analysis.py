@@ -10,7 +10,7 @@ Analysis class library
 import file#, database
 import countingMethod as cm
 import predictionMethod as pm
-import pyqtgraph as pg
+#import pyqtgraph as pg
 import database
 
 class loadStory:
@@ -104,7 +104,7 @@ class loadStory:
                 sm=i[1]#cycle median
                 N=i[0]#number of applied cycle fo that load
                 try:
-                    R=round((sm-sa)/(sm+sa),1)
+                    R=i[2]
                     if R<-99:#-99 is group limit
                         R=-99
                     elif R>99:#99 is group limit
@@ -117,36 +117,36 @@ class loadStory:
                     _sR=_sRC#considered as compression
                 try:
                     x=Rlist.index(R)#if we have the group with same R
-                    sa90=data[x][1]*_sR*(1-R)/2
-                    print("ORA")
+                    smax90=data[x][1]*_sR*(1-R)/2
                 except ValueError:#if we don't
                     if Rmethod=="Interpol":
                         RlistOrd=Rlist.sort()
                         x=Rlist.index(database.nextMin(R,RlistOrd))
-                        sa90m=data[x][1]*_sR*(1-R)/2
-                        sm_m=(1+R)*data[x][1]*_sR/2
+                        smax90m=data[x][1]*_sR*(1-R)/2
+                        sm_m=(1+data[x][0])*smax90m/2
+                        
                         x=Rlist.index(database.nextMin(R,RlistOrd.reverse()))
-                        sa90M=data[x][1]*_sR*(1-R)/2
-                        sm_M=(1+R)*data[x][1]*_sR/2
-                        sa90=pm.interpolationR([sa90m,sm_m],[sa90M,sm_M],R,sa)
+                        smax90M=data[x][1]*_sR*(1-R)/2
+                        sm_M=(1+data[x][0])*smax90M/2
+                        smax90=pm.interpolationR([smax90m,sm_m],[smax90M,sm_M],R,sa)
                     else:#Rmethod
                         """
                         TODO: possibility to choose which group
                         """
                         _R=data[0][0]#take the first point
                         _smax90R=float(data[0][1])*_sR
-                        sa90=pm.Rmethod(_sR,_R,_smax90R,R,sa)
-                minerD=pm.miner(_sR,sa90,sa,N)
+                        smax90=pm.Rmethod(_sR,_R,_smax90R,R,sa)
+                minerD=pm.miner(_sR,smax90,sa+sm,N)
                 self.D=self.D+minerD
-                print(p, sa, sm, sa90, minerD,self.D)
-                print()
+                print(p, sa, sm, _R, _smax90R, smax90, minerD,self.D)
                 
     def plot(self):
         """
         It will plot extreme values of the spectrum
         TODO: create the block cycle array to plot
         """
-        pg.plot(self.extreme, symbol='o')
+        #pg.plot(self.extreme, symbol='o')
+        pass
 
 class matList:
     def __init__(self, id_n, name, sigmaT, matrix, fiber,sigmaC):

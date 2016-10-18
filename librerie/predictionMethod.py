@@ -30,8 +30,8 @@ def Rmethod(_sR, _R, _smax, R, sa):
     _sa=q*_sR/(_sR+q*(1+R)/(1-R))#intersection of Haigh and R curve
     _sm=xRect(_sa,m,q)#sm corrisp to the amplitude of intersection
 
-    sm=(1+R)/(1-R)*sa#applied sm
-    result=_sm+_sa-sm
+
+    result=_sm+_sa
     return result
 
 def interpolationR(p1,p2,R,sa):
@@ -42,21 +42,20 @@ def interpolationR(p1,p2,R,sa):
     _sm=q/((1-R)/(1+R)-m)#intersection sm (we don't use *FORMULA of R_method because it may not pass in (sR,0)).
     _sa=(1-R)/(1+R)*_sm #intersection sa
     
-    sm=(1+R)/(1-R)*sa #applied sm
-    result=_sm+_sa-sm#_sm+_sa=_smax
+    result=_sm+_sa#_sm+_sa=_smax
     return result
 
-def miner(_sR, _sa, sa, N):
+def miner(_sR, _smax90, smax, N):
     """
     miner damaging method
     _sa = database or haigh output amplitude for incipient collpase
     sa = applied amplitude
     """
-    if _sa<0:#sm is higher than the max value for sigma
+    if _smax90<0:#sm is higher than the max value for sigma
         D=1.1
     else:
-        m,q=rect2([0,log10(_sR)],[log10(2*10**6),log10(_sa)])
-        Nmax=10**(xRect(log10(sa),m,q))
+        m,q=rect2([0,log10(_sR)],[log10(2*10**6),log10(_smax90)])
+        Nmax=10**(xRect(log10(smax),m,q))
         D=N/Nmax
     return D
 

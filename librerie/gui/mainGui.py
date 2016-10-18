@@ -12,7 +12,7 @@ from tkinter import ttk
 from tkinter import filedialog as fdialog
 from tkinter import messagebox as msg
 import tkinter.scrolledtext as ScrolledText
-import pyqtgraph as pg
+#import pyqtgraph as pg
 import time
 import database, analysis
 import countingMethod as cm
@@ -345,6 +345,7 @@ class MainWindow(tk.Tk):
             string=time.strftime("%H:%M:%S")+" "+key+"  analized with Miner and "+self.Rmethod.get()+" total damage is: "+str(danno)+"\n"
             string_2="You can repeat this block "+str(danno**-1)+" times."
             string=string+string_2
+        
         except (NameError, TypeError):
             string=time.strftime("%H:%M:%S")+"You don't have the necessary groups to use interpolation method"#you have only one group or only group only in one side
         self.logError.insert(tk.INSERT,string+"\n")
