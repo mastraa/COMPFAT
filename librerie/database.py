@@ -51,10 +51,11 @@ def searchAllGroups(fibre, matrix, beh, arch):
     result = cursor.fetchall()
     return result
     
-def nextMin(value,lista):
+def nextMax(value,lista):
     """
     value is the aim
     lista: list ordered from min to max
+    return the minimum value higher than aim_value
     return R value or NameError
     """
     for i in lista:
@@ -62,10 +63,11 @@ def nextMin(value,lista):
             return i
     raise NameError('No value')
 
-def nextMax(value,lista):
+def nextMin(value,lista):
     """
     value is the aim
-    lista: list ordered from min to max
+    lista: list ordered from max to min
+    return the maximum value lower than aim_value
     return R value or NameError
     """
     for i in lista:

@@ -101,44 +101,46 @@ class loadStory:
             sa=item[0]/2#cycle amplitude from range
             for i in item[1]:#every mean for amplitude
                 p=p+1
-                sm=i[1]#cycle median
                 N=i[0]#number of applied cycle fo that load
-                try:
-                    R=i[2]
-                    if R<-99:#-99 is group limit
-                        R=-99
-                    elif R>99:#99 is group limit
-                        R=99
-                except ZeroDivisionError:
-                    R=-99
-                if sm>0:
+                sm=i[1]#cycle median                
+                R=i[2]#cycle ratio
+                if sm>=0:
                     _sR=_sRT#considered as traction
+                    sApp=sm+sa#s_max
                 else:
                     _sR=_sRC#considered as compression
+                    sApp=sm-sa#s_min
                 try:
                     x=Rlist.index(R)#if we have the group with same R
-                    smax90=data[x][1]*_sR*(1-R)/2
+                    smax2E6=data[x][1]*_sR*(1-R)/2
+                    method="group"
                 except ValueError:#if we don't
-                    if Rmethod=="Interpol":
+                    try:#Interpol
                         RlistOrd=Rlist.sort()
-                        x=Rlist.index(database.nextMin(R,RlistOrd))
-                        smax90m=data[x][1]*_sR*(1-R)/2
-                        sm_m=(1+data[x][0])*smax90m/2
                         
-                        x=Rlist.index(database.nextMin(R,RlistOrd.reverse()))
-                        smax90M=data[x][1]*_sR*(1-R)/2
-                        sm_M=(1+data[x][0])*smax90M/2
-                        smax90=pm.interpolationR([smax90m,sm_m],[smax90M,sm_M],R,sa)
-                    else:#Rmethod
-                        """
-                        TODO: possibility to choose which group
-                        """
+                        x=Rlist.index(database.nextMax(R,RlistOrd))#first higher value
+                        smax2E6M=data[x][1]*_sR*(1-R)/2
+                        sm_M=(1+data[x][0])*smax2E6M/2
+                        
+                        RlistOrd=RlistOrd.reverse()
+                        x=Rlist.index(database.nextMin(R,RlistOrd))
+                        smax2E6m=data[x][1]*_sR*(1-R)/2
+                        sm_m=(1+data[x][0])*smax2E6m/2
+                        smax2E6=pm.interpolationR([smax2E6m,sm_m],[smax2E6M,sm_M],R,sa)
+                        method="interpol"
+                        
+                        if R>1 and Rlist(x)<=1:
+                            raise NameError('No value')
+                            
+                    except(NameError, TypeError):#Rmethod
                         _R=data[0][0]#take the first point
-                        _smax90R=float(data[0][1])*_sR
-                        smax90=pm.Rmethod(_sR,_R,_smax90R,R,sa)
-                minerD=pm.miner(_sR,smax90,sa+sm,N)
+                        _smax2E6R=float(data[0][1])*_sR
+                        smax2E6=pm.Rmethod(_sR,_R,_smax2E6R,R,sa)
+                        method="other"
+                        
+                minerD=pm.miner(_sR,smax2E6,abs(sApp),N)
                 self.D=self.D+minerD
-                print(p, sa, sm, _R, _smax90R, smax90, minerD,self.D)
+                print(p, method, sApp, _R, smax2E6, minerD, self.D)
                 
     def plot(self):
         """

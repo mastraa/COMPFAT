@@ -93,7 +93,11 @@ def rearrangeMax(serie):
     return serie[maxPos:]+serie[:maxPos]+serie[maxPos:maxPos+1]
 
 def getR(sa,sm):
-    return round(((sm-sa)/(sm+sa)),1)
+    try:
+        R =round(((sm-sa)/(sm+sa)),2)
+    except ZeroDivisionError:
+        R=-99
+    return R
 
 def rainflow(serie):#s = serie of peak and valley
     """

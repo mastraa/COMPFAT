@@ -68,6 +68,7 @@ class MainWindow(tk.Tk):
         self.deltaR=tk.DoubleVar()#range interval for packing, null=no packing
         self.deltaM=tk.DoubleVar()#median interval for packing, null=no packing
         self.blockLevel=tk.IntVar()
+        self.maxLim=tk.StringVar()
         #widgets
         self.typeChoosen = ttk.Combobox(sec1, width=12, textvariable=self.fileType, state='readonly')#choose file type
         self.typeChoosen.grid(column=1, row=0)
@@ -79,6 +80,8 @@ class MainWindow(tk.Tk):
         self.pageChoosen.grid(column=1, row=2)
         ttk.Entry(sec1, textvariable=self.column, width=5).grid(column=1, row=3)
         ttk.Entry(sec1, textvariable=self.header, width=5).grid(column=1, row=4)
+        ttk.Label(sec1,text="max limit").grid(column=0,row=5)
+        ttk.Entry(sec1, textvariable=self.maxLim).grid(column=1, row=5)
         
         
         sec2=ttk.LabelFrame(p1,text="Counting Method")
@@ -97,36 +100,34 @@ class MainWindow(tk.Tk):
         ttk.Radiobutton(sec2, text="Max Value", variable=self.blockLevel, value=2).grid(column=1, row=3)
         self.blockLevel.set(1)#set default radio
         
+        
           
         plotter=ttk.LabelFrame(p1,text="View data")
         plotter.grid(column=1,row=0,rowspan=2, sticky='NW', padx=10, pady=10)
         ttk.Label(plotter,text="story name").grid(column=0,row=0)
-        ttk.Label(plotter,text="max limit").grid(column=0,row=1)
-        ttk.Label(plotter,text="File Name").grid(column=0,row=3)
+        ttk.Label(plotter,text="File Name").grid(column=0,row=2)
         
         self.storyName=tk.StringVar()
-        self.maxLim=tk.StringVar()
         self.saveFile=tk.StringVar()
         self.saveType=tk.StringVar()
         self.st2Delete=tk.StringVar()
         self.st2Plot=tk.StringVar()
         ttk.Entry(plotter, textvariable=self.storyName).grid(column=1, row=0)
-        ttk.Entry(plotter, textvariable=self.maxLim).grid(column=1, row=1)
-        ttk.Button(plotter, text="Create Story", command=self.createStory).grid(column=1,row=2)
-        ttk.Entry(plotter, textvariable=self.saveFile).grid(column=1, row=3)
+        ttk.Button(plotter, text="Create Story", command=self.createStory).grid(column=1,row=1)
+        ttk.Entry(plotter, textvariable=self.saveFile).grid(column=1, row=2)
         self.saveChoosen = ttk.Combobox(plotter, width=6, textvariable=self.saveType, state='readonly')#choose file type
-        self.saveChoosen.grid(column=2, row=3)
+        self.saveChoosen.grid(column=2, row=2)
         self.saveChoosen['values']=('.xlsx')#now only xlsx available
         self.saveChoosen.current(0)
         ttk.Button(plotter, text="Save", command=self.saveStory).grid(column=1,row=4)
-        ttk.Label(plotter,text="Delete Story").grid(column=0,row=6)        
+        ttk.Label(plotter,text="Delete Story").grid(column=0,row=5)        
         self.deleteStory = ttk.Combobox(plotter, width=15, textvariable=self.st2Delete, state='readonly')#choose file type
-        self.deleteStory.grid(column=1,row=6)
-        ttk.Button(plotter, text="Delete", command=self.deleteStory).grid(column=2,row=6)
-        ttk.Label(plotter,text="Plot Story").grid(column=0,row=7)
+        self.deleteStory.grid(column=1,row=5)
+        ttk.Button(plotter, text="Delete", command=self.deleteStory).grid(column=2,row=5)
+        ttk.Label(plotter,text="Plot Story").grid(column=0,row=6)
         self.toPlotStory = ttk.Combobox(plotter, width=15, textvariable=self.st2Plot, state='readonly')#choose file type
-        self.toPlotStory.grid(column=1,row=7)
-        ttk.Button(plotter, text="Plot", command=self.plotStory).grid(column=2,row=7)
+        self.toPlotStory.grid(column=1,row=6)
+        ttk.Button(plotter, text="Plot", command=self.plotStory).grid(column=2,row=6)
 
         """Material data page"""
         self.material=tk.StringVar()    #type of fiber
@@ -347,7 +348,7 @@ class MainWindow(tk.Tk):
             string=string+string_2
         
         except (NameError, TypeError):
-            string=time.strftime("%H:%M:%S")+"You don't have the necessary groups to use interpolation method"#you have only one group or only group only in one side
+            string=time.strftime("%H:%M:%S")+"You don't have the necessary groups to use interpolation method"#you have only one group or only group in one side
         self.logError.insert(tk.INSERT,string+"\n")
         
     def plotStory(self):
