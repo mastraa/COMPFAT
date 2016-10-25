@@ -173,6 +173,7 @@ class MainWindow(tk.Tk):
         self.dataList=[]#list of all groups of selected materials to pass to analize function
         self.st2Anal=tk.StringVar()
         self.percent=tk.IntVar()#50-90%
+        self.percent=50
         self.PromptOut=tk.IntVar()
         
         beh=ttk.LabelFrame(p3,text="Analysis Setting")
@@ -387,7 +388,9 @@ class matWind(tk.Toplevel):
         ttk.Label(self,text="Name").grid(column=0,row=0)
         ttk.Entry(self, textvariable=self.name, width=20).grid(column=1, row=0)
         ttk.Label(self,text="fiber").grid(column=0,row=1)
-        ttk.Entry(self, textvariable=self.fiber, width=10).grid(column=1, row=1)
+        self.fibreChoosen = ttk.Combobox(self, width=12, textvariable=self.fiber)#choose file page to read
+        self.fibreChoosen.grid(column=1, row=1)
+        self.fibreChoosen['values']=('carbon','glass')
         ttk.Label(self,text="matrix").grid(column=2,row=1)
         self.matrixChoosen = ttk.Combobox(self, width=5, textvariable=self.matrix, state='readonly')
         self.matrixChoosen.grid(column=3, row=1)
