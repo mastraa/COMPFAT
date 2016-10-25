@@ -12,6 +12,7 @@ import countingMethod as cm
 import predictionMethod as pm
 #import pyqtgraph as pg
 import database
+from math import log10
 
 class loadStory:
     """
@@ -82,28 +83,51 @@ class loadStory:
     def save(self, fileName, sheet):
         file.writeXls(fileName, self.block, sheet)
     
-    def analize(self, data,_sRT,_sRC,Rmethod):
+    def analize(self, data,_sRT,_sRC,Rmethod, per, show):
         """
         it analize the load story for given material
         data = groups selected
+        per=statiscal percent 50/90%
         _ = group material limit
         the group give the fatigue parameter to the max value
         maybe you can read sa90, don't worry, we pass only choosen phi
+        
+        TODO: la curva sa-sm è "simmetrica" rispetto a R=-1
+        quindi va messo che l'interpolazione vale di la o di qua!!!
+        
+        NB: Rlist will take all groups, RlistTemp only usable group,
+        we will search in the RlistTemp for available group and then
+        we search the respective index in Rlist. Rlist has all groups
+        data, RlistTemp only R!!!
+        
         """
         _sRT=int(_sRT)
         _sRC=int(_sRC)
         self.D=0
         Rlist=[]
         p=0
-        for j in data:
-            Rlist.append(j[0])
+        
+        for i in range(len(data)):
+            if data[i][0]==99 or data[i][0]==-99:
+                data[i][0]=data[i][0]*10**10
+            Rlist.append(data[i][0])
         for item in self.block:#every amplitude
             sa=item[0]/2#cycle amplitude from range
             for i in item[1]:#every mean for amplitude
+                RRight,RLeft=[],[]#divide R values for Haigh Curve
+                for r in Rlist:
+                    if -1<=r<1:
+                        RRight.append(r)
+                    else:
+                        RLeft.append(r)
                 p=p+1
                 N=i[0]#number of applied cycle fo that load
                 sm=i[1]#cycle median                
                 R=i[2]#cycle ratio
+                if -1<=R<1:#takes only one side of Haigh Curve
+                    RlistTemp=RRight
+                else:
+                    RlistTemp=RLeft
                 if sm>=0:
                     _sR=_sRT#considered as traction
                     sApp=sm+sa#s_max
@@ -112,35 +136,69 @@ class loadStory:
                     sApp=sm-sa#s_min
                 try:
                     x=Rlist.index(R)#if we have the group with same R
-                    smax2E6=data[x][1]*_sR*(1-R)/2
+                    smax2E6=data[x][1]*_sR
+                    if per==90:
+                        print(data[x][0], data[x][1], data[x][2])
+                        smax2E650=smax2E6#50%
+                        smax2E6=data[x][2]*_sR#90%
+                        _sR90=10**(log10(_sR)-(log10(smax2E650)-log10(smax2E6)))
+                        print(_sR90, smax2E6, log10(_sR), log10(smax2E650), log10(smax2E6))
                     method="group"
                 except ValueError:#if we don't
                     try:#Interpol
-                        RlistOrd=Rlist.sort()
+                        RlistOrd=RlistTemp[:]
+                        RlistOrd.sort()
                         
                         x=Rlist.index(database.nextMax(R,RlistOrd))#first higher value
-                        smax2E6M=data[x][1]*_sR*(1-R)/2
-                        sm_M=(1+data[x][0])*smax2E6M/2
-                        
-                        RlistOrd=RlistOrd.reverse()
+                        smax2E6M50=data[x][1]*_sR
+                        sm_M50=smax2E6M50*(1+Rlist[x])/2
+                        sa_M50=smax2E6M50*(1-Rlist[x])/2                       
+                        RlistOrd.reverse()
                         x=Rlist.index(database.nextMin(R,RlistOrd))
-                        smax2E6m=data[x][1]*_sR*(1-R)/2
-                        sm_m=(1+data[x][0])*smax2E6m/2
-                        smax2E6=pm.interpolationR([smax2E6m,sm_m],[smax2E6M,sm_M],R,sa)
-                        method="interpol"
+                        smax2E6m50=data[x][1]*_sR
+                        sm_m50=smax2E6m50*(1+Rlist[x])/2
+                        sa_m50=smax2E6m50*(1-Rlist[x])/2 
+                        smax2E650=pm.interpolationR([sm_m50,sa_m50],[sm_M50,sa_M50],R,sa)
+                        if per == 50:
+                            smax2E6=smax2E650
+                        else:#repeat fo 90! I need both to calculate delta 50-90 to get _sR90
+                            RlistOrd=RlistTemp[:]
+                            RlistOrd.sort()
                         
+                            x=Rlist.index(database.nextMax(R,RlistOrd))#first higher value
+                            smax2E6M90=data[x][1]*_sR
+                            sm_M90=smax2E6M90*(1+Rlist[x])/2
+                            sa_M90=smax2E6M90*(1-Rlist[x])/2                       
+                        
+                            RlistOrd.reverse()
+                            x=Rlist.index(database.nextMin(R,RlistOrd))
+                            smax2E6m90=data[x][1]*_sR
+                            sm_m90=smax2E6m90*(1+Rlist[x])/2
+                            sa_m90=smax2E6m90*(1-Rlist[x])/2 
+                        
+                            smax2E6=pm.interpolationR([sm_m90,sa_m90],[sm_M90,sa_M90],R,sa)
+                            _sR90=10**(log10(_sR)-(log10(smax2E650)-log10(smax2E6)))
+                        method="interpol"
                         if R>1 and Rlist(x)<=1:
                             raise NameError('No value')
-                            
-                    except(NameError, TypeError):#Rmethod
-                        _R=data[0][0]#take the first point
-                        _smax2E6R=float(data[0][1])*_sR
-                        smax2E6=pm.Rmethod(_sR,_R,_smax2E6R,R,sa)
+                    except(NameError, TypeError):#Rmethod 
+                        x=Rlist.index(RlistTemp[0])
+                        _R=data[x][0]
+                        _smax2E6R50=float(data[x][1])*_sR
+                        smax2E6=pm.Rmethod(_sR,_R,_smax2E6R50,R,sa)
+                        if per==90:
+                            _smax2E6R90=float(data[x][2])*_sR
+                            _sR90=10**(log10(_sR)-(log10(_smax2E6R50)-log10(_smax2E6R90)))
+                            smax2E6=pm.Rmethod(_sR90,_R,_smax2E6R90,R,sa)
                         method="other"
-                        
-                minerD=pm.miner(_sR,smax2E6,abs(sApp),N)
+                if per == 90:
+                    _sR=_sR90 #not necessary, i can put it inside!!!
+                minerD,m=pm.miner(_sR,smax2E6,abs(sApp),N)
                 self.D=self.D+minerD
-                print(p, method, sApp, _R, smax2E6, minerD, self.D)
+                if show:
+                    print('{0:5d}: {1:2d}% {2:10} {3:7f} {4:7f} {5:7f} {6:10e} {7:10e}'.format(p,per,method,round(sApp,2),round(smax2E6,2),round(m,5),minerD,self.D))
+                #print(p, per, method, sApp, smax2E6, minerD, self.D)
+        print()
                 
     def plot(self):
         """

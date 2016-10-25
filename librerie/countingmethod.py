@@ -96,7 +96,7 @@ def getR(sa,sm):
     try:
         R =round(((sm-sa)/(sm+sa)),2)
     except ZeroDivisionError:
-        R=-99
+        R=-99*10**10
     return R
 
 def rainflow(serie):#s = serie of peak and valley

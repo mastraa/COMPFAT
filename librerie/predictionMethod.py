@@ -27,6 +27,8 @@ def Rmethod(_sR, _R, _smax, R, sa):
     _sa=_smax-_sm
     m,q=rect2([_sm,_sa],[_sR,0])#haigh curve
     
+    #print(_R, _smax, _sm, _sa, m, q)    
+    
     _sa=q*_sR/(_sR+q*(1+R)/(1-R))#intersection of Haigh and R curve
     _sm=xRect(_sa,m,q)#sm corrisp to the amplitude of intersection
 
@@ -41,8 +43,8 @@ def interpolationR(p1,p2,R,sa):
     m,q=rect2(p1,p2)#haigh curve
     _sm=q/((1-R)/(1+R)-m)#intersection sm (we don't use *FORMULA of R_method because it may not pass in (sR,0)).
     _sa=(1-R)/(1+R)*_sm #intersection sa
-    
-    result=_sm+_sa#_sm+_sa=_smax
+    #print(p1,p2,m,q)
+    result=_sm+_sa#_sm+_sa=_smax2E6
     return result
 
 def miner(_sR, _smax90, smax, N):
@@ -57,7 +59,8 @@ def miner(_sR, _smax90, smax, N):
         m,q=rect2([0,log10(_sR)],[log10(2*10**6),log10(_smax90)])
         Nmax=10**(xRect(log10(smax),m,q))
         D=N/Nmax
-    return D
+        #print(m,q,Nmax)
+    return D,m
 
 def rect2(p1,p2):
     """

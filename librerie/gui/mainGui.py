@@ -15,7 +15,6 @@ import tkinter.scrolledtext as ScrolledText
 #import pyqtgraph as pg
 import time
 import database, analysis
-import countingMethod as cm
 
 from openpyxl import load_workbook
 
@@ -78,10 +77,10 @@ class MainWindow(tk.Tk):
         self.openBtn.grid(column=1,row=1)
         self.pageChoosen = ttk.Combobox(sec1, width=12, textvariable=self.pageName, state='readonly')#choose file page to read
         self.pageChoosen.grid(column=1, row=2)
-        ttk.Entry(sec1, textvariable=self.column, width=5).grid(column=1, row=3)
-        ttk.Entry(sec1, textvariable=self.header, width=5).grid(column=1, row=4)
+        ttk.Entry(sec1, textvariable=self.column, width=10).grid(column=1, row=3)
+        ttk.Entry(sec1, textvariable=self.header, width=10).grid(column=1, row=4)
         ttk.Label(sec1,text="max limit").grid(column=0,row=5)
-        ttk.Entry(sec1, textvariable=self.maxLim).grid(column=1, row=5)
+        ttk.Entry(sec1, textvariable=self.maxLim, width=10).grid(column=1, row=5)
         
         
         sec2=ttk.LabelFrame(p1,text="Counting Method")
@@ -173,7 +172,8 @@ class MainWindow(tk.Tk):
         self.Rmethod=tk.StringVar()
         self.dataList=[]#list of all groups of selected materials to pass to analize function
         self.st2Anal=tk.StringVar()
-        self.percent=tk.StringVar()#50-90%
+        self.percent=tk.IntVar()#50-90%
+        self.PromptOut=tk.IntVar()
         
         beh=ttk.LabelFrame(p3,text="Analysis Setting")
         beh.grid(column=0,row=1,sticky='W', padx=10, pady=10)
@@ -191,7 +191,7 @@ class MainWindow(tk.Tk):
         ttk.Label(beh,text="%").grid(column=6,row=0)
         self.perSet = ttk.Combobox(beh, width=5, textvariable=self.percent, state='readonly')
         self.perSet.grid(column=7, row=0)
-        self.perSet['values']=['50','90']
+        self.perSet['values']=[50,90]
         ttk.Button(beh,text="Show Group", command=self.showGroup).grid(row=0,column=8)
         ttk.Label(beh,text="Amp. stimation").grid(column=9,row=0)
         self.RmethodSet = ttk.Combobox(beh, width=8, textvariable=self.Rmethod, state='readonly')
@@ -226,7 +226,9 @@ class MainWindow(tk.Tk):
         ttk.Label(beh,text="Story").grid(column=0,row=3)
         self.analStory = ttk.Combobox(beh, width=15, textvariable=self.st2Anal, state='readonly')#choose file type
         self.analStory.grid(column=1,row=3)
-        ttk.Button(beh,text="Analize", command=self.analize).grid(row=3,column=2)
+        printCheck=ttk.Checkbutton(beh,text="Prompt Output", variable=self.PromptOut, onvalue=1, offvalue =0, width=15)
+        printCheck.grid(row=3, column=2)
+        ttk.Button(beh,text="Analize", command=self.analize).grid(row=3,column=3)
         
         
     def openFile(self):
@@ -329,27 +331,23 @@ class MainWindow(tk.Tk):
             self.groupTree.delete(i)
         for item in groups:
             self.groupTree.insert('','end',values=(item[1],item[3],item[4],item[5],item[6],item[7],item[8],item[9],'qualità',item[2]))
-            if self.percent.get()=="50":
-                phi=item[7]#50%
-            else:
-                phi=item[8]#90%
-            self.dataList.append([item[2],phi])#R,phi
+            self.dataList.append([item[2],item[7],item[8]])#R,phi,percentual
             
     def analize(self):
         """
         TODO: disconnect damage value from the load story class!
         """
-        key = self.st2Anal.get()#get the name of the story selected
         try:
-            self.loadStored[key].analize(self.dataList,self.matStored[self.matAnal.get()].sigmaT,self.matStored[self.matAnal.get()].sigmaC, self.Rmethod.get())
+            key = self.st2Anal.get()#get the name of the story selected
+            self.loadStored[key].analize(self.dataList,self.matStored[self.matAnal.get()].sigmaT,self.matStored[self.matAnal.get()].sigmaC,\
+            self.Rmethod.get(), self.percent.get(), self.PromptOut.get())
             danno=self.loadStored[key].D
-            string=time.strftime("%H:%M:%S")+" "+key+"  analized with Miner and "+self.Rmethod.get()+" total damage is: "+str(danno)+"\n"
-            string_2="You can repeat this block "+str(danno**-1)+" times."
+            string=key+"  analized with Miner and "+self.Rmethod.get()+" total damage is: "+str(danno)+"\n"
+            string_2="You can repeat this block "+str(round(danno**-1,2))+" times."
             string=string+string_2
-        
-        except (NameError, TypeError):
-            string=time.strftime("%H:%M:%S")+"You don't have the necessary groups to use interpolation method"#you have only one group or only group in one side
-        self.logError.insert(tk.INSERT,string+"\n")
+        except IndexError:
+            string="ERROR: select press on Show Group! \n Otherwise no group suites your request!"
+        self.logError.insert(tk.INSERT,time.strftime("%H:%M:%S")+" "+string+"\n")
         
     def plotStory(self):
         """
