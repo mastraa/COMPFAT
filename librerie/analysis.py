@@ -83,7 +83,7 @@ class loadStory:
     def save(self, fileName, sheet):
         file.writeXls(fileName, self.block, sheet)
     
-    def analize(self, data,_sRT,_sRC,Rmethod, per, show):
+    def analize(self, data,_sRT,_sRC, per, show):
         """
         it analize the load story for given material
         data = groups selected
@@ -106,7 +106,7 @@ class loadStory:
         self.D=0
         Rlist=[]
         p=0
-        
+        print(per, show)
         for i in range(len(data)):
             if data[i][0]==99 or data[i][0]==-99:
                 data[i][0]=data[i][0]*10**10
@@ -195,10 +195,11 @@ class loadStory:
                     _sR=_sR90 #not necessary, i can put it inside!!!
                 minerD,m=pm.miner(_sR,smax2E6,abs(sApp),N)
                 self.D=self.D+minerD
-                if show:
+                if show==1:
                     print('{0:5d}: {1:2d}% {2:10} {3:7f} {4:7f} {5:7f} {6:10e} {7:10e}'.format(p,per,method,round(sApp,2),round(smax2E6,2),round(m,5),minerD,self.D))
-                #print(p, per, method, sApp, smax2E6, minerD, self.D)
-        print()
+                    print()                    
+                    #print(p, per, method, sApp, smax2E6, minerD, self.D)
+        
                 
     def plot(self):
         """

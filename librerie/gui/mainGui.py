@@ -4,6 +4,8 @@ Created on Tue Jul 26 13:58:33 2016
 
 @author: mastraa
 
+python3 version
+
 Last update 13/09/2016
 """
 
@@ -12,7 +14,6 @@ from tkinter import ttk
 from tkinter import filedialog as fdialog
 from tkinter import messagebox as msg
 import tkinter.scrolledtext as ScrolledText
-#import pyqtgraph as pg
 import time
 import database, analysis
 
@@ -30,7 +31,7 @@ class MainWindow(tk.Tk):
         self.configure(background="gray89")
         self.loadStored={}
         self.matStored={}
-        self.newMatWin=0
+        self.newMatWin, self.groupChoose=0,0
         
         master = ttk.Frame(self, name='master') # create Frame in self
         master.pack(fill=tk.BOTH) # fill both sides of the parent
@@ -169,11 +170,9 @@ class MainWindow(tk.Tk):
         self.matAnal=tk.StringVar()#material selected for analysis
         self.behaviour=tk.StringVar()
         self.architecture=tk.StringVar()
-        self.Rmethod=tk.StringVar()
         self.dataList=[]#list of all groups of selected materials to pass to analize function
         self.st2Anal=tk.StringVar()
         self.percent=tk.IntVar()#50-90%
-        self.percent=50
         self.PromptOut=tk.IntVar()
         
         beh=ttk.LabelFrame(p3,text="Analysis Setting")
@@ -193,11 +192,9 @@ class MainWindow(tk.Tk):
         self.perSet = ttk.Combobox(beh, width=5, textvariable=self.percent, state='readonly')
         self.perSet.grid(column=7, row=0)
         self.perSet['values']=[50,90]
-        ttk.Button(beh,text="Show Group", command=self.showGroup).grid(row=0,column=8)
-        ttk.Label(beh,text="Amp. stimation").grid(column=9,row=0)
-        self.RmethodSet = ttk.Combobox(beh, width=8, textvariable=self.Rmethod, state='readonly')
-        self.RmethodSet.grid(column=10, row=0)
-        self.RmethodSet['values']=['Interpol','R_method'] #interpolation method will be available soon
+        self.perSet.current(0)
+        ttk.Button(beh,text="Estract Groups", command=self.extractGroup).grid(row=0,column=8)
+        ttk.Button(beh,text="Choose Groups", command=self.chooseGroup).grid(row=0,column=9)
         
         self.groupTree=ttk.Treeview(beh,selectmode="extended",columns=('1','2','3','4','5','6','7','8','9','10'))
         self.groupTree.heading("#0", text=" ")
@@ -221,7 +218,7 @@ class MainWindow(tk.Tk):
         self.groupTree.heading("#9", text="Quality")
         self.groupTree.column("#9",minwidth=0,width=100)
         self.groupTree.heading("#10", text="R")
-        self.groupTree.column("#10",minwidth=0,width=30)
+        self.groupTree.column("#10",minwidth=0,width=50)
         self.groupTree.grid(column=0, columnspan=6, row=2)
         
         ttk.Label(beh,text="Story").grid(column=0,row=3)
@@ -315,7 +312,7 @@ class MainWindow(tk.Tk):
         for item in database.searchAll('matLib','fiber',materiale):
             self.tree.insert('','end',values=(item[0],item[1],item[2],item[3], item[4],item[5],item[6]))#id, name, fiber, matrix, Rt, Rc, note
             
-    def showGroup(self):
+    def extractGroup(self):
         """
         search the groups with the given characteristics
         and show it in the table
@@ -332,7 +329,7 @@ class MainWindow(tk.Tk):
             self.groupTree.delete(i)
         for item in groups:
             self.groupTree.insert('','end',values=(item[1],item[3],item[4],item[5],item[6],item[7],item[8],item[9],'qualità',item[2]))
-            self.dataList.append([item[2],item[7],item[8]])#R,phi,percentual
+            self.dataList.append([item[2],item[7],item[8]])#R,phi50,phi90
             
     def analize(self):
         """
@@ -341,9 +338,9 @@ class MainWindow(tk.Tk):
         try:
             key = self.st2Anal.get()#get the name of the story selected
             self.loadStored[key].analize(self.dataList,self.matStored[self.matAnal.get()].sigmaT,self.matStored[self.matAnal.get()].sigmaC,\
-            self.Rmethod.get(), self.percent.get(), self.PromptOut.get())
+            self.percent.get(), self.PromptOut.get())
             danno=self.loadStored[key].D
-            string=key+"  analized with Miner and "+self.Rmethod.get()+" total damage is: "+str(danno)+"\n"
+            string=key+"  analized with Miner and total damage is: "+str(danno)+"\n"
             string_2="You can repeat this block "+str(round(danno**-1,2))+" times."
             string=string+string_2
         except IndexError:
@@ -367,6 +364,41 @@ class MainWindow(tk.Tk):
         else:
             self.newMatWin = 1
             matWind(self, "Material data tools","400x200")
+    
+    def chooseGroup(self):
+        """
+        Tools to modify group list
+        """
+        if self.groupChoose==1:
+            pass
+        else:
+            self.groupChoose = 1
+            self.plotting=[[],[],[],[],[]]#sm50,sa50,sm90,sa90
+            for item in self.dataList:
+                self.plotting[4]=R=item[0]
+                smax2E650=item[1]
+                smax2E690=item[2]
+                if R==-99:
+                    self.plotting[0].append(-smax2E650/2)#sm50
+                    self.plotting[1].append(smax2E650/2)#sa50
+                    self.plotting[2].append(-smax2E690/2)#sm90
+                    self.plotting[3].append(smax2E690/2)#sa90
+                else:
+                    self.plotting[0].append(smax2E650/2*(1+R))#sm50
+                    self.plotting[1].append(smax2E650/2*(1-R))#sa50
+                    self.plotting[2].append(smax2E690/2*(1+R))#sm90
+                    self.plotting[3].append(smax2E690/2*(1-R))#sa90
+            x=self.plotting[0]
+            y=self.plotting[1]
+            """
+            plt.scatter(x,y)
+            plt.axis([-1, 1, 0, 1])
+            for i in range(len(x)):
+                plt.annotate('local max', xy=(x[i], y[i]), xytext=(0.5, 0.6),arrowprops=dict(facecolor='black', shrink=0.05),)
+            plt.show()
+            """
+            groupChoosen(self, "Group Data Tools","400x200")
+            
             
 
 class matWind(tk.Toplevel):
@@ -420,4 +452,23 @@ class matWind(tk.Toplevel):
     
     def DBsave(self):
         msg.showwarning("Disabled", "This functionality hasn't been implemented yet")
+        
+class groupChoosen(tk.Toplevel):
+    """
+    """
+    def __init__(self, parent, title, size):
+        tk.Toplevel.__init__(self, parent)
+        self.title(title)
+        self.geometry(size)#x,y
+        self.resizable(0,0)
+        self.parent=parent
+            
+        
+        
+    def quitting(self):
+        """
+        Quit from material tools
+        """
+        self.parent.groupChoose=0
+        self.destroy()
         
