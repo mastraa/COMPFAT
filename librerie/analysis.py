@@ -2,7 +2,7 @@
 """
 Author: Andrea Mastrangelo
 
-Last release 14/07/2016
+Last release 26/10/2016
 
 Analysis class library
 """
@@ -10,7 +10,6 @@ Analysis class library
 import file#, database
 import countingMethod as cm
 import predictionMethod as pm
-#import pyqtgraph as pg
 import database
 from math import log10
 

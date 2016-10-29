@@ -10,3 +10,5 @@ data/Montmelo.xlsx
 *.pyc
 
 .DS_Store
+
+build

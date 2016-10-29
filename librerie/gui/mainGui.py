@@ -2,11 +2,11 @@
 """
 Created on Tue Jul 26 13:58:33 2016
 
-@author: mastraa
+@author: Andrea Mastrangelo
 
 python3 version
 
-Last update 13/09/2016
+Last update:   28/10/2016
 """
 
 import tkinter as tk
@@ -16,6 +16,7 @@ from tkinter import messagebox as msg
 import tkinter.scrolledtext as ScrolledText
 import time
 import database, analysis
+import matGui
 
 from openpyxl import load_workbook
 
@@ -43,11 +44,13 @@ class MainWindow(tk.Tk):
         noteBook.add(p1, text='Load Data')
         noteBook.add(p2, text='Material Data')
         noteBook.add(p3, text='Analysis')
-        noteBook.grid(column=0, row=0)
+        noteBook.grid(column=0, row=0, columnspan=6)
         #noteBook.pack(padx=2, pady=3) # fill "master" but pad sides
         ttk.Label(master, text="Log Monitor").grid(column=0, row=1)
         self.logError=ScrolledText.ScrolledText(master, width=100, height=15)
-        self.logError.grid(row=2,column=0)
+        self.logError.grid(row=2,column=0, columnspan=5)
+        self.quitBtn=ttk.Button(master,text='Quit App', command=self.quitApp)#close application
+        self.quitBtn.grid(column=5,row=1)
           
         
         """ Load Setting Page """
@@ -228,7 +231,12 @@ class MainWindow(tk.Tk):
         printCheck.grid(row=3, column=2)
         ttk.Button(beh,text="Analize", command=self.analize).grid(row=3,column=3)
         
-        
+    def quitApp(self):
+        """
+        Quit from application
+        """
+        self.quit()
+    
     def openFile(self):
         """
         Open file with given extension and save the file name
@@ -351,9 +359,9 @@ class MainWindow(tk.Tk):
         """
         TODO: improve graphical plotting
         """
-        key=self.st2Plot.get()
-        self.loadStored[key].plot()
-          
+        print(self.window_2)
+        #key=self.st2Plot.get()
+        #self.loadStored[key].plot()
     def newMat(self):
         """
         Possibility to insert a temporary material
@@ -372,34 +380,8 @@ class MainWindow(tk.Tk):
         if self.groupChoose==1:
             pass
         else:
-            self.groupChoose = 1
-            self.plotting=[[],[],[],[],[]]#sm50,sa50,sm90,sa90
-            for item in self.dataList:
-                self.plotting[4]=R=item[0]
-                smax2E650=item[1]
-                smax2E690=item[2]
-                if R==-99:
-                    self.plotting[0].append(-smax2E650/2)#sm50
-                    self.plotting[1].append(smax2E650/2)#sa50
-                    self.plotting[2].append(-smax2E690/2)#sm90
-                    self.plotting[3].append(smax2E690/2)#sa90
-                else:
-                    self.plotting[0].append(smax2E650/2*(1+R))#sm50
-                    self.plotting[1].append(smax2E650/2*(1-R))#sa50
-                    self.plotting[2].append(smax2E690/2*(1+R))#sm90
-                    self.plotting[3].append(smax2E690/2*(1-R))#sa90
-            x=self.plotting[0]
-            y=self.plotting[1]
-            """
-            plt.scatter(x,y)
-            plt.axis([-1, 1, 0, 1])
-            for i in range(len(x)):
-                plt.annotate('local max', xy=(x[i], y[i]), xytext=(0.5, 0.6),arrowprops=dict(facecolor='black', shrink=0.05),)
-            plt.show()
-            """
             groupChoosen(self, "Group Data Tools","400x200")
-            
-            
+            self.groupChoose = 1
 
 class matWind(tk.Toplevel):
     """
@@ -443,6 +425,10 @@ class matWind(tk.Toplevel):
         self.destroy()
         
     def insert(self):
+        """
+        From Material data tools get properties and insert them to
+        main gui materials page tree 
+        """
         name=self.name.get()
         fiber=self.fiber.get().lower()
         matrix=self.matrix.get()
@@ -451,24 +437,97 @@ class matWind(tk.Toplevel):
         self.parent.tree.insert('','end',values=('no ID',name,fiber,matrix,sRt,sRc,' '))#id, name, fiber, matrix, Rt, Rc, note
     
     def DBsave(self):
+        database.insertMat()
         msg.showwarning("Disabled", "This functionality hasn't been implemented yet")
         
 class groupChoosen(tk.Toplevel):
     """
     """
+     
     def __init__(self, parent, title, size):
         tk.Toplevel.__init__(self, parent)
         self.title(title)
         self.geometry(size)#x,y
         self.resizable(0,0)
         self.parent=parent
+        self.groups=[]
+        self.dataList=self.parent.dataList
+        for child in self.parent.groupTree.get_children():
+            self.groups.append(self.parent.groupTree.item(child)['values'])
+        
+        self.groupTree=ttk.Treeview(self,selectmode="extended",columns=('1','2','3'))
+        self.groupTree.heading("#0", text=" ")
+        self.groupTree.column("#0",minwidth=0,width=1)
+        self.groupTree.heading("#1", text="R")
+        self.groupTree.column("#1",minwidth=0,width=50)
+        self.groupTree.heading("#2", text="50%")
+        self.groupTree.column("#2",minwidth=0,width=50)
+        self.groupTree.heading("#3", text="90%")
+        self.groupTree.column("#3",minwidth=0,width=50)        
+        self.groupTree.grid(column=0, columnspan=4, rowspan=4)
+        ttk.Button(self, text="Plot", command=self.plotting).grid(column=4,row=0)
+        ttk.Button(self, text="Delete", command=self.deleting).grid(column=4,row=1)
+        ttk.Button(self, text="Quit", command=self.quitting).grid(column=4,row=2)
+        ttk.Button(self, text="Save & Quit", command=self.saving).grid(column=4,row=3)
+        
+        self.inserting()
+        
+        
+    def plotting(self):
+        """
+        plots remaining groups
+        """
+        self.plotter=[[],[],[],[],[]]#sm50,sa50,sm90,sa90
+        for item in self.dataList:
+            R=float(item[0])
+            smax2E650=float(item[1])
+            smax2E690=float(item[2])
+            self.plotter[4].append(R)
+            if R==-99 or R==99:
+                self.plotter[0].append(-smax2E650/2)#sm50
+                self.plotter[1].append(smax2E650/2)#sa50
+                self.plotter[2].append(-smax2E690/2)#sm90
+                self.plotter[3].append(smax2E690/2)#sa90
+            else:
+                self.plotter[0].append(smax2E650/2*(1+R))#sm50
+                self.plotter[1].append(smax2E650/2*(1-R))#sa50
+                self.plotter[2].append(smax2E690/2*(1+R))#sm90
+                self.plotter[3].append(smax2E690/2*(1-R))#sa90
+        if self.parent.percent.get()==50:
+            x=self.plotter[0]
+            y=self.plotter[1]
+        else:
+            x=self.plotter[2]
+            y=self.plotter[3]
+        matGui.scatter([x,y,self.plotter[4]])
             
-        
-        
+    def inserting(self):
+        """
+        insert groups in local table
+        """
+        for item in self.groups:
+            self.groupTree.insert('','end',values=(item[9],item[5],item[6])) 
+    
+    def deleting(self):
+        for item in self.groupTree.selection():
+            i=self.groupTree.index(item)
+            self.groupTree.delete(item)           
+            del(self.groups[i])
+            del(self.dataList[i])
+    
+    def saving(self):
+        """
+        save remaining group to parent table
+        call quit function
+        """
+        self.parent.dataList=self.dataList
+        for i in self.parent.groupTree.get_children():
+            self.parent.groupTree.delete(i)
+        for item in self.groups:
+            self.parent.groupTree.insert('','end',values=(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9]))
+        self.quitting()
+            
     def quitting(self):
-        """
-        Quit from material tools
-        """
         self.parent.groupChoose=0
         self.destroy()
         
