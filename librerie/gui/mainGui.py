@@ -385,7 +385,7 @@ class MainWindow(tk.Tk):
         if self.groupChoose==1:
             pass
         else:
-            groupChoosen(self, "Group Data Tools","400x200")
+            groupChoosen(self, "Group Data Tools","400x600")
             self.groupChoose = 1
 
 class matWind(tk.Toplevel):
@@ -397,6 +397,7 @@ class matWind(tk.Toplevel):
         self.geometry(size)#x,y
         self.resizable(0,0)
         self.parent=parent
+        self.iconbitmap='icon_2.ico'
         
         self.name=tk.StringVar()
         self.sRt=tk.StringVar()
@@ -457,6 +458,7 @@ class groupChoosen(tk.Toplevel):
         self.parent=parent
         self.groups=[]
         self.dataList=self.parent.dataList
+        self.iconbitmap='icon_2.ico'
         for child in self.parent.groupTree.get_children():
             self.groups.append(self.parent.groupTree.item(child)['values'])
         
