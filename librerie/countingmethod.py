@@ -2,7 +2,7 @@
 """
 Author: Andrea Mastrangelo
 
-Last release 23/10/2016
+Last release 28/10/2016
 """
 import numpy as np
 from copy import deepcopy

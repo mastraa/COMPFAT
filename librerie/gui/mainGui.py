@@ -6,7 +6,7 @@ Created on Tue Jul 26 13:58:33 2016
 
 python3 version
 
-Last update:   28/10/2016
+Last update:   02/11/2016
 """
 
 import tkinter as tk
@@ -177,6 +177,7 @@ class MainWindow(tk.Tk):
         self.st2Anal=tk.StringVar()
         self.percent=tk.IntVar()#50-90%
         self.PromptOut=tk.IntVar()
+        self.predMet=tk.StringVar()#predictionMehod (Miner/Broutman)
         
         beh=ttk.LabelFrame(p3,text="Analysis Setting")
         beh.grid(column=0,row=1,sticky='W', padx=10, pady=10)
@@ -256,9 +257,13 @@ class MainWindow(tk.Tk):
         """
         create load story and add it to the list
         now it saves data to default file
-        """       
+        """
         try:
-            newStory = analysis.loadStory(self.fileName, int(self.header.get()), fileType=str(self.fileType.get()), sheet=self.pageName.get(), column=int(self.column.get()), limit=int(self.maxLim.get()))  
+            limit=int(self.maxLim.get())
+        except ValueError:#limit not inserted
+            limit=0
+        try:
+            newStory = analysis.loadStory(self.fileName, int(self.header.get()), fileType=str(self.fileType.get()), sheet=self.pageName.get(), column=int(self.column.get()), limit=limit)  
             if newStory.Error:
                 string=newStory.errorsCheck(time.strftime("%H:%M:%S"))
             else:

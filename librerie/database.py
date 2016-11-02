@@ -2,7 +2,7 @@
 """
 Author: Andrea Mastrangelo
 
-Last release 23/10/2016
+Last release 29/10/2016
 """
 
 import sqlite3

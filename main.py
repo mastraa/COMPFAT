@@ -39,6 +39,6 @@ print(storia.ranges)
 """
 
 
-radice=gui.MainWindow("Poseidon","1000x675")#title, width_x_height
+radice=gui.MainWindow("COMPFAT","1000x675")#title, width_x_height
 radice.iconbitmap('icon.ico')
 radice.mainloop()

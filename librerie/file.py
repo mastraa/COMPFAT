@@ -2,7 +2,7 @@
 """
 Author: Andrea Mastrangelo
 
-Last release 17/10/2016
+Last release 02/11/2016
 
 File manipolation library
 """
@@ -10,30 +10,30 @@ File manipolation library
 import os
 from openpyxl import load_workbook, Workbook
 from decimal import *
-#from openpyxl.worksheet.read_only import ReadOnlyWorksheet
 
 
-
-def readXls(nameFile, sheet, column, header, limit=None):
+def readXls(nameFile, sheet, column, header, limit=0):
     """
     Read values from excel 2010 files column
     """
-    a=[]
+    a,result=[],[]
     wb = load_workbook(filename = nameFile, read_only=True, data_only=True)
     #data_only to read current values of cells and not formulas
-    sheet_ranges = wb[sheet]
+    sheet_ranges = wb[sheet]#worksheet
     
-    if limit and limit <=1000:#more than 1000 too slow!!!
-        for i in range(header+1,header+limit):
-            a.append(float(sheet_ranges.cell(row = i, column = column).value))
-            #the first cell with cell is 1-1
-    else:
-        f=sheet_ranges.columns[column-1]#the first cell with columns is 0-0
-        for i in range (len(f)-header):
-            a.append(f[i+header].value)
-        if limit:
-            a=a[:limit]
-    return a
+
+    """
+    pay attention with the upgrade of openpyxl 2.4.0 ReadOnlyWS has no more column attribute
+    """
+    f=sheet_ranges.columns[column-1]#the first cell with columns is 0-0
+    for i in range (len(f)-header):
+        a.append(f[i+header].value)
+    if limit>0:
+        a=a[:limit]
+    for item in a:
+        if not(item==None):
+            result.append(item)
+    return result
     
 def writeXls(nameFile, h, sheetName="Foglio1"):
     """

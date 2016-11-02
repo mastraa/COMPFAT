@@ -2,7 +2,7 @@
 """
 Author: Andrea Mastrangelo
 
-Last release 26/10/2016
+Last release 28/10/2016
 
 Analysis class library
 """
@@ -21,9 +21,8 @@ class loadStory:
     extreme = local max and min values of spectrum
     ranges = three dimension array : range, number of cycles, mean values
     """
-    def __init__(self, fileName, header, fileType='.xlsx', sheet='Carichi', column=1, limit=None):
+    def __init__(self, fileName, header, fileType='.xlsx', sheet='Carichi', column=1, limit=0):
         """
-        TODO: no limit = ValueError-->make possible to read all value in the column
         """
         if fileType=='.xlsx':   
             try: 
@@ -82,7 +81,7 @@ class loadStory:
     def save(self, fileName, sheet):
         file.writeXls(fileName, self.block, sheet)
     
-    def analize(self, data,_sRT,_sRC, per, show):
+    def analize(self, data,_sRT,_sRC, per, show, pred="miner"):
         """
         it analize the load story for given material
         data = groups selected
@@ -90,9 +89,6 @@ class loadStory:
         _ = group material limit
         the group give the fatigue parameter to the max value
         maybe you can read sa90, don't worry, we pass only choosen phi
-        
-        TODO: la curva sa-sm è "simmetrica" rispetto a R=-1
-        quindi va messo che l'interpolazione vale di la o di qua!!!
         
         NB: Rlist will take all groups, RlistTemp only usable group,
         we will search in the RlistTemp for available group and then
@@ -102,6 +98,7 @@ class loadStory:
         """
         _sRT=int(_sRT)
         _sRC=int(_sRC)
+        self.R=_sRT
         self.D=0
         Rlist=[]
         p=0
@@ -192,21 +189,18 @@ class loadStory:
                         method="other"
                 if per == 90:
                     _sR=_sR90 #not necessary, i can put it inside!!!
-                minerD,m=pm.miner(_sR,smax2E6,abs(sApp),N)
-                self.D=self.D+minerD
-                if show==1:
-                    print('{0:5d}: {1:2d}% {2:10} {3:7f} {4:7f} {5:7f} {6:10e} {7:10e}'.format(p,per,method,round(sApp,2),round(smax2E6,2),round(m,5),minerD,self.D))
-                    print()                    
-                    #print(p, per, method, sApp, smax2E6, minerD, self.D)
-        
-                
-    def plot(self):
-        """
-        It will plot extreme values of the spectrum
-        TODO: create the block cycle array to plot
-        """
-        #pg.plot(self.extreme, symbol='o')
-        pass
+                if pred=="miner":
+                    minerD,m=pm.miner(_sR,smax2E6,abs(sApp),N)
+                    self.D=self.D+minerD
+                    if show==1:
+                        print('{0:5d}: {1:2d}% {2:10} {3:7f} {4:7f} {5:7f} {6:10e} {7:10e}'.format(p,per,method,round(sApp,2),round(smax2E6,2),round(m,5),minerD,self.D))
+                else: #Broutman-Sahu
+                    minerD,m=pm.miner(_sR,smax2E6,abs(sApp),N)
+                    damn=(self.R-abs(sApp))*minerD
+                    self.R==self.R-damn
+                    if show==1:
+                        print('{0:5d}: {1:2d}% {2:10} {3:7f} {4:7f} {5:7f} {6:10e} {7:10e}'.format(p,per,method,round(sApp,2),round(smax2E6,2),round(m,5),damn,self.R))
+                print()                    
 
 class matList:
     def __init__(self, id_n, name, sigmaT, matrix, fiber,sigmaC):

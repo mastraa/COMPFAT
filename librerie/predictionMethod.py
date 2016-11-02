@@ -2,7 +2,7 @@
 """
 Author: Andrea Mastrangelo
 
-Last release 25/10/2016
+Last release 02/11/2016
 
 """
 from math import log10
