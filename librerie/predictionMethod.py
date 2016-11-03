@@ -34,6 +34,7 @@ def Rmethod(_sR, _R, _smax, R, sa):
 
 
     result=_sm+_sa
+    print(m,q, _sa)
     return result
 
 def interpolationR(p1,p2,R,sa):

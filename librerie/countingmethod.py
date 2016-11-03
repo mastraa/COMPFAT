@@ -111,11 +111,11 @@ def rainflow(serie):#s = serie of peak and valley
     s=deepcopy(serie)#prevent modification of original array!
     i=0
     ranges=[]
-    if isinstance(s,np.ndarray):
-        s=s.tolist()
+    if isinstance(s,np.ndarray):# i read file as np.array
+        s=s.tolist()# i need a list
     while i<len(s)-1:#-1 because index increment is later
         i=i+1
-        if i>1:
+        if i>1:#second step of rainflow: if i have less than 3 points
             #create ranges
             X=round(abs(s[i]-s[i-1]),4)
             Y=round(abs(s[i-1]-s[i-2]),4)
@@ -134,7 +134,7 @@ def rainflow(serie):#s = serie of peak and valley
                     ranges.append([Y,1.0,sm,R])
                     del(s[i-2:i]) #discarding Y peak and valley
                     i=i-3 #case to reducing s lenght of 2, but not reread (see position of i increment)
-    for i in range (0,len(s)):
+    for i in range (1,len(s)):
         Y=abs(s[i]-s[i-1])
         sa=Y/2
         sm=round((s[i]+s[i-1])/2,4)

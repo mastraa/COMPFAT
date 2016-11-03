@@ -21,7 +21,9 @@ sys.path.append('librerie')
 sys.path.append('librerie/gui')
 
 import mainGui as gui
-
+"""
+TODO: study how to hide config files in directory and compile it!
+"""
 
 #storia = analysis.loadStory('data/Monza.xlsx', 1, fileType='xls', sheet='Carichi', column=1, limit=150)
 #storia.counting()#rainflow and histMean by default
@@ -39,6 +41,6 @@ print(storia.ranges)
 """
 
 
-radice=gui.MainWindow("COMPFAT","1000x675")#title, width_x_height
+radice=gui.MainWindow("COMPFAT","1000x700")#title, width_x_height
 radice.iconbitmap('icon.ico')
 radice.mainloop()

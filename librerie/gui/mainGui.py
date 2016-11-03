@@ -14,9 +14,10 @@ from tkinter import ttk
 from tkinter import filedialog as fdialog
 from tkinter import messagebox as msg
 import tkinter.scrolledtext as ScrolledText
-import time
+import time, subprocess, os, sys
 import database, analysis
 import matGui
+
 
 from openpyxl import load_workbook
 
@@ -33,6 +34,7 @@ class MainWindow(tk.Tk):
         self.loadStored={}
         self.matStored={}
         self.newMatWin, self.groupChoose=0,0
+        self.readme="ReadMe.pdf"
         
         master = ttk.Frame(self, name='master') # create Frame in self
         master.pack(fill=tk.BOTH) # fill both sides of the parent
@@ -44,13 +46,15 @@ class MainWindow(tk.Tk):
         noteBook.add(p1, text='Load Data')
         noteBook.add(p2, text='Material Data')
         noteBook.add(p3, text='Analysis')
-        noteBook.grid(column=0, row=0, columnspan=6)
+        noteBook.grid(column=0, row=1, columnspan=6)
         #noteBook.pack(padx=2, pady=3) # fill "master" but pad sides
-        ttk.Label(master, text="Log Monitor").grid(column=0, row=1)
-        self.logError=ScrolledText.ScrolledText(master, width=100, height=15)
-        self.logError.grid(row=2,column=0, columnspan=5)
+        ttk.Label(master, text="Log Monitor").grid(column=0, row=2)
+        self.logError=ScrolledText.ScrolledText(master, width=100, height=15, state="normal")
+        self.logError.grid(row=3,column=0, columnspan=5, rowspan=5)
         self.quitBtn=ttk.Button(master,text='Quit App', command=self.quitApp)#close application
-        self.quitBtn.grid(column=5,row=1)
+        self.quitBtn.grid(column=5,row=0)
+        self.readBtn=ttk.Button(master,text='ReadMe', command=self.openReadme)
+        self.readBtn.grid(column=0,row=0)
           
         
         """ Load Setting Page """
@@ -103,7 +107,6 @@ class MainWindow(tk.Tk):
         ttk.Radiobutton(sec2, text="Max Value", variable=self.blockLevel, value=2).grid(column=1, row=3)
         self.blockLevel.set(1)#set default radio
         
-        
           
         plotter=ttk.LabelFrame(p1,text="View data")
         plotter.grid(column=1,row=0,rowspan=2, sticky='NW', padx=10, pady=10)
@@ -126,11 +129,11 @@ class MainWindow(tk.Tk):
         ttk.Label(plotter,text="Delete Story").grid(column=0,row=5)        
         self.deleteStory = ttk.Combobox(plotter, width=15, textvariable=self.st2Delete, state='readonly')#choose file type
         self.deleteStory.grid(column=1,row=5)
-        ttk.Button(plotter, text="Delete", command=self.deleteStory).grid(column=2,row=5)
+        ttk.Button(plotter, text="Delete", command=self.delStory).grid(column=2,row=5)
         ttk.Label(plotter,text="Plot Story").grid(column=0,row=6)
         self.toPlotStory = ttk.Combobox(plotter, width=15, textvariable=self.st2Plot, state='readonly')#choose file type
         self.toPlotStory.grid(column=1,row=6)
-        ttk.Button(plotter, text="Plot", command=self.plotStory).grid(column=2,row=6)
+        ttk.Button(plotter, text="Plot", command=self.plotStory, state="disabled").grid(column=2,row=6)
 
         """Material data page"""
         self.material=tk.StringVar()    #type of fiber
@@ -237,6 +240,15 @@ class MainWindow(tk.Tk):
         Quit from application
         """
         self.quit()
+        
+    def openReadme(self):
+        filepath=self.readme
+        if sys.platform.startswith('darwin'):
+            subprocess.call(('open', filepath))
+        elif os.name == 'nt':
+            os.startfile(filepath)
+        elif os.name == 'posix':
+            subprocess.call(('xdg-open', filepath))
     
     def openFile(self):
         """
@@ -249,8 +261,14 @@ class MainWindow(tk.Tk):
         fileOpt['parent']=self
         fileOpt['title']='Load spectrum file'
         self.fileName=fdialog.askopenfilename(**fileOpt)
-        pages = load_workbook(filename = self.fileName, read_only=True).get_sheet_names()
-        self.pageChoosen['values']=pages
+        try:
+            pages = load_workbook(filename = self.fileName, read_only=True).get_sheet_names()
+            self.pageChoosen['values']=pages
+        except FileNotFoundError:
+            string=time.strftime("%H:%M:%S")+": Nessun file caricato"
+            self.logError.insert(tk.INSERT,string+"\n")
+            self.pageChoosen['values']=[]
+            
             
         
     def createStory(self):
@@ -290,11 +308,8 @@ class MainWindow(tk.Tk):
             self.loadStored[key].save('data/'+str(self.saveFile.get())+str(self.saveType.get()), key)
             string=time.strftime("%H:%M:%S")+" "+key+" strory saved to "+"data/"+str(self.saveFile.get())+str(self.saveType.get())
             self.logError.insert(tk.INSERT,string+"\n")
-        
-    def deleteStory(self):
-        """
-        delete story stored in loadStored
-        """
+    
+    def delStory(self):
         key = self.st2Delete.get()
         del self.loadStored[key]
         self.deleteStory['values']=list(self.loadStored.keys()) #update deleteStory Combobox
@@ -385,7 +400,7 @@ class MainWindow(tk.Tk):
         if self.groupChoose==1:
             pass
         else:
-            groupChoosen(self, "Group Data Tools","400x600")
+            groupChoosen(self, "Group Data Tools","400x250")
             self.groupChoose = 1
 
 class matWind(tk.Toplevel):
@@ -398,6 +413,7 @@ class matWind(tk.Toplevel):
         self.resizable(0,0)
         self.parent=parent
         self.iconbitmap='icon_2.ico'
+        self.configure(background="gray89")
         
         self.name=tk.StringVar()
         self.sRt=tk.StringVar()
@@ -459,6 +475,7 @@ class groupChoosen(tk.Toplevel):
         self.groups=[]
         self.dataList=self.parent.dataList
         self.iconbitmap='icon_2.ico'
+        self.configure(background="gray89")
         for child in self.parent.groupTree.get_children():
             self.groups.append(self.parent.groupTree.item(child)['values'])
         
@@ -471,7 +488,7 @@ class groupChoosen(tk.Toplevel):
         self.groupTree.column("#2",minwidth=0,width=50)
         self.groupTree.heading("#3", text="90%")
         self.groupTree.column("#3",minwidth=0,width=50)        
-        self.groupTree.grid(column=0, columnspan=4, rowspan=4)
+        self.groupTree.grid(column=0, columnspan=4, rowspan=6)
         ttk.Button(self, text="Plot", command=self.plotting).grid(column=4,row=0)
         ttk.Button(self, text="Delete", command=self.deleting).grid(column=4,row=1)
         ttk.Button(self, text="Quit", command=self.quitting).grid(column=4,row=2)

@@ -187,6 +187,7 @@ class loadStory:
                             _sR90=10**(log10(_sR)-(log10(_smax2E6R50)-log10(_smax2E6R90)))
                             smax2E6=pm.Rmethod(_sR90,_R,_smax2E6R90,R,sa)
                         method="other"
+                        print(_R)
                 if per == 90:
                     _sR=_sR90 #not necessary, i can put it inside!!!
                 if pred=="miner":
