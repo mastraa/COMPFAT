@@ -102,7 +102,6 @@ class loadStory:
         self.D=0
         Rlist=[]
         p=0
-        print(per, show)
         for i in range(len(data)):
             if data[i][0]==99 or data[i][0]==-99:
                 data[i][0]=data[i][0]*10**10
@@ -112,8 +111,11 @@ class loadStory:
             for i in item[1]:#every mean for amplitude
                 RRight,RLeft=[],[]#divide R values for Haigh Curve
                 for r in Rlist:
-                    if -1<=r<1:
+                    if -1<r<1:
                         RRight.append(r)
+                    elif r==-1:
+                        RRight.append(r)
+                        RLeft.append(r)
                     else:
                         RLeft.append(r)
                 p=p+1
@@ -126,7 +128,7 @@ class loadStory:
                     RlistTemp=RLeft
                 if sm>=0:
                     _sR=_sRT#considered as traction
-                    sApp=sm+sa#s_max
+                    sApp=sm+sa#s_max, then i will compare abs value
                 else:
                     _sR=_sRC#considered as compression
                     sApp=sm-sa#s_min
@@ -134,11 +136,9 @@ class loadStory:
                     x=Rlist.index(R)#if we have the group with same R
                     smax2E6=data[x][1]*_sR
                     if per==90:
-                        print(data[x][0], data[x][1], data[x][2])
                         smax2E650=smax2E6#50%
                         smax2E6=data[x][2]*_sR#90%
                         _sR90=10**(log10(_sR)-(log10(smax2E650)-log10(smax2E6)))
-                        print(_sR90, smax2E6, log10(_sR), log10(smax2E650), log10(smax2E6))
                     method="group"
                 except ValueError:#if we don't
                     try:#Interpol
@@ -157,7 +157,7 @@ class loadStory:
                         smax2E650=pm.interpolationR([sm_m50,sa_m50],[sm_M50,sa_M50],R,sa)
                         if per == 50:
                             smax2E6=smax2E650
-                        else:#repeat fo 90! I need both to calculate delta 50-90 to get _sR90
+                        else:#repeat for 90! I need both to calculate delta 50-90 to get _sR90
                             RlistOrd=RlistTemp[:]
                             RlistOrd.sort()
                         
@@ -187,9 +187,8 @@ class loadStory:
                             _sR90=10**(log10(_sR)-(log10(_smax2E6R50)-log10(_smax2E6R90)))
                             smax2E6=pm.Rmethod(_sR90,_R,_smax2E6R90,R,sa)
                         method="other"
-                        print(_R)
                 if per == 90:
-                    _sR=_sR90 #not necessary, i can put it inside!!!
+                    _sR=_sR90
                 if pred=="miner":
                     minerD,m=pm.miner(_sR,smax2E6,abs(sApp),N)
                     self.D=self.D+minerD
