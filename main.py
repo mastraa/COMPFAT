@@ -8,7 +8,10 @@ Andrea Mastrangelo
 Ing.Paolo Carraro
 Prof.Marino Quaresimin
 
-Last update: 28/10/2016
+Last update: 11/11/2016 (general updates)
+
+
+Previous release: BETA 0.0.1 - first release
 """
 
 # cd /Users/mastraa/Documents/Andrea/Università/Magistrale/Tesi/fatigue

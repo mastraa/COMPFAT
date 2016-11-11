@@ -146,15 +146,15 @@ class loadStory:
                         RlistOrd.sort()
                         
                         x=Rlist.index(database.nextMax(R,RlistOrd))#first higher value
-                        smax2E6M50=data[x][1]*_sR
-                        sm_M50=smax2E6M50*(1+Rlist[x])/2
-                        sa_M50=smax2E6M50*(1-Rlist[x])/2                       
+                        sextM=data[x][1]*_sR  
+                        pM50=pm.HaighPoints(sm, Rlist[x], sextM)#pM50=[_sm,sa]
+                        
                         RlistOrd.reverse()
                         x=Rlist.index(database.nextMin(R,RlistOrd))
-                        smax2E6m50=data[x][1]*_sR
-                        sm_m50=smax2E6m50*(1+Rlist[x])/2
-                        sa_m50=smax2E6m50*(1-Rlist[x])/2 
-                        smax2E650=pm.interpolationR([sm_m50,sa_m50],[sm_M50,sa_M50],R,sa)
+                        sextm=data[x][1]*_sR  
+                        pm50=pm.HaighPoints(sm, Rlist[x], sextm)#pm50=[_sm,sa]                        
+                        
+                        smax2E650=pm.interpolationR(pm50,pM50,R)
                         if per == 50:
                             smax2E6=smax2E650
                         else:#repeat for 90! I need both to calculate delta 50-90 to get _sR90
@@ -162,22 +162,21 @@ class loadStory:
                             RlistOrd.sort()
                         
                             x=Rlist.index(database.nextMax(R,RlistOrd))#first higher value
-                            smax2E6M90=data[x][1]*_sR
-                            sm_M90=smax2E6M90*(1+Rlist[x])/2
-                            sa_M90=smax2E6M90*(1-Rlist[x])/2                       
+                            sextM=data[x][2]*_sR
+                            pM90=pm.HaighPoints(sm, Rlist[x], sextM)#pM50=[_sm,sa]                       
                         
                             RlistOrd.reverse()
                             x=Rlist.index(database.nextMin(R,RlistOrd))
-                            smax2E6m90=data[x][1]*_sR
-                            sm_m90=smax2E6m90*(1+Rlist[x])/2
-                            sa_m90=smax2E6m90*(1-Rlist[x])/2 
+                            sextm=data[x][2]*_sR
+                            pm90=pm.HaighPoints(sm, Rlist[x], sextm)#pm50=[_sm,sa]
                         
-                            smax2E6=pm.interpolationR([sm_m90,sa_m90],[sm_M90,sa_M90],R,sa)
+                            smax2E6=pm.interpolationR(pm90,pM90,R)
                             _sR90=10**(log10(_sR)-(log10(smax2E650)-log10(smax2E6)))
                         method="interpol"
                         if R>1 and Rlist(x)<=1:
                             raise NameError('No value')
-                    except(NameError, TypeError):#Rmethod 
+                    #except(NameError, TypeError):#Rmethod 
+                    except(ValueError):#Rmethod fo debugging to show error: COMMENT!!!
                         x=Rlist.index(RlistTemp[0])
                         _R=data[x][0]
                         _smax2E6R50=float(data[x][1])*_sR

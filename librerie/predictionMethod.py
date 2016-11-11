@@ -42,7 +42,7 @@ def Rmethod(_sR, _R, _smax, R, sa):
     result=abs(_sm)+_sa
     return result
 
-def interpolationR(p1,p2,R,sa):
+def interpolationR(p1,p2,R):
     """
     Interpolation of the rect beetween major and minor nearest values
     """
@@ -82,3 +82,17 @@ def xRect(y,m,q):
     x value from rect constant and y
     """
     return (y-q)/m
+    
+def HaighPoints(sm, R, sext):
+    """
+    automatically detect the side of diagram
+    return [sm,sa] of haigh diagram
+    sext=s estreme (max or min) calculated as sR*phi
+    """
+    if sm>=0:
+        _sm=sext/2*(1+R)
+        _sa=sext/2*(1-R)
+    else:
+        _sm=sext/2*(1+1/R)
+        _sa=sext/2*(1/R-1)
+    return[_sm,_sa]
