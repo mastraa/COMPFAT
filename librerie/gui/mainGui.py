@@ -455,7 +455,7 @@ class matWind(tk.Toplevel):
         fiber=self.fiber.get().lower()
         matrix=self.matrix.get()
         sRt=int(self.sRt.get())
-        sRc=int(self.sRc.get())
+        sRc=abs(int(self.sRc.get() ))
         self.parent.tree.insert('','end',values=('no ID',name,fiber,matrix,sRt,sRc,' '))#id, name, fiber, matrix, Rt, Rc, note
     
     def DBsave(self):

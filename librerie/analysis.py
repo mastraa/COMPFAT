@@ -2,7 +2,7 @@
 """
 Author: Andrea Mastrangelo
 
-Last release 28/10/2016
+Last release 11/11/2016
 
 Analysis class library
 """

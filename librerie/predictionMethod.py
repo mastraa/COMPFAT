@@ -2,7 +2,7 @@
 """
 Author: Andrea Mastrangelo
 
-Last release 02/11/2016
+Last release 11/11/2016
 
 """
 from math import log10
@@ -25,11 +25,13 @@ def Rmethod(_sR, _R, _smax, R, sa):
     """
     if -1<=R<1:
         _sm=_smax*(1+_R)/2 #median value of database data
+        _sRx=_sR
     else:#_smax is real _smin!
         _smax=-_smax
         _sm=_smax/2*(1/_R+1)#we want negative _sm in the left side of Haigh diagram
+        _sRx=-_sR#left side diagram
     _sa=abs(_smax-_sm)
-    m,q=rect2([_sm,_sa],[_sR,0])#haigh curve
+    m,q=rect2([_sm,_sa],[_sRx,0])#haigh curve, _sRx needed to be in the right side of the diagram
     
     #print(_R, _smax, _sm, _sa, m, q)    
     

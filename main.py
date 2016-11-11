@@ -2,7 +2,7 @@
 """
 Fatigue Test Software: 
 
-BETA version 0.0.1
+BETA version 0.1.2
 
 Andrea Mastrangelo
 Ing.Paolo Carraro
