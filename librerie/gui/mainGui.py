@@ -372,7 +372,7 @@ class MainWindow(tk.Tk):
             string_2="You can repeat this block "+str(round(danno**-1,2))+" times."
             string=string+string_2
         except IndexError:
-            string="ERROR: select press on Show Group! \n Otherwise no group suites your request!"
+            string="ERROR: select press on Extract Group! \n Otherwise no group suites your request!"
         self.logError.insert(tk.INSERT,time.strftime("%H:%M:%S")+" "+string+"\n")
         
     def plotStory(self):

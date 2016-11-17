@@ -35,7 +35,8 @@ def Rmethod(_sR, _R, _smax, R, sa):
     
     #print(_R, _smax, _sm, _sa, m, q)    
     
-    _sa=q*_sR/(_sR+q*(1+R)/(1-R))#intersection of Haigh and R curve
+    _sa=q*_sR/(_sR+abs(q*(1+R)/(1-R)))#intersection of Haigh and R curve
+    #abs are needed in case of sm<0!
     _sm=xRect(_sa,m,q)#sm corrisp to the amplitude of intersection
 
 

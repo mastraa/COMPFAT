@@ -175,8 +175,8 @@ class loadStory:
                         method="interpol"
                         if R>1 and Rlist(x)<=1:
                             raise NameError('No value')
-                    #except(NameError, TypeError):#Rmethod 
-                    except(ValueError):#Rmethod fo debugging to show error: COMMENT!!!
+                    except(NameError, TypeError):#Rmethod 
+                    #except(ValueError):#Rmethod for debugging to show error: COMMENT!!!
                         x=Rlist.index(RlistTemp[0])
                         _R=data[x][0]
                         _smax2E6R50=float(data[x][1])*_sR
