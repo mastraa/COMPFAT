@@ -8,7 +8,7 @@ Andrea Mastrangelo
 Ing.Paolo Carraro
 Prof.Marino Quaresimin
 
-Last update: 11/11/2016 (general updates)
+Last update: 17/11/2016 (general updates)
 
 
 Previous release: BETA 0.0.1 - first release
@@ -17,11 +17,21 @@ Previous release: BETA 0.0.1 - first release
 # cd /Users/mastraa/Documents/Andrea/Università/Magistrale/Tesi/fatigue
 # cd /Users/gregoriomastrangelo/Desktop/Andrea/Universita/Tesi_Mastrangelo/fatigue
 
-import sys
+import sys,os
 import matplotlib
 matplotlib.use("Qt4Agg")
-sys.path.append('librerie')
-sys.path.append('librerie/gui')
+
+if getattr(sys, 'frozen', False):
+    application_path = os.path.dirname(sys.executable)
+elif __file__:
+    application_path = os.path.dirname(__file__)
+
+sys.path.append(os.path.join(application_path, 'librerie'))
+sys.path.append(os.path.join(application_path, 'librerie/gui'))
+
+
+#sys.path.append('librerie')
+#sys.path.append('librerie/gui')
 
 import mainGui as gui
 """

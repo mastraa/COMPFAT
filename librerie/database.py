@@ -2,13 +2,13 @@
 """
 Author: Andrea Mastrangelo
 
-Last release 29/10/2016
+Last release 17/11/2016
 """
 
 import sqlite3
 
 
-name = "fatData.db"
+_name = "fatData.db"
 
 def DBconnect(_name):
     connection = sqlite3.connect(_name)
@@ -57,11 +57,10 @@ def searchAllGroups(fibre, matrix, beh, arch):
     DBdisconnect(connection)
     return result
     
-def insertMat():
-    name="fatData.db"
-    connection, cursor = DBconnect(name)
+def insertMat(db, name, fiber ,matrix, sRc, sRt):
+    connection, cursor = DBconnect(db)
     try:
-        cursor.execute("INSERT INTO matLib (name, fiber, matrix, sRt, sRc, note) VALUES ('name','fiber','matrix',100,200,'nota')")
+        cursor.execute("INSERT INTO matLib (name, fiber, matrix, sRt, sRc, note) VALUES ('"+name+"','"+fiber+"','"+matrix+"',"+str(sRt)+","+str(sRc)+",'nota')")
     except sqlite3.Error as e:
         print (e.args[0])
     connection.commit()

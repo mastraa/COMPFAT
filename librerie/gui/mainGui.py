@@ -6,7 +6,7 @@ Created on Tue Jul 26 13:58:33 2016
 
 python3 version
 
-Last update:   02/11/2016
+Last update:   17/11/2016
 """
 
 import tkinter as tk
@@ -459,8 +459,13 @@ class matWind(tk.Toplevel):
         self.parent.tree.insert('','end',values=('no ID',name,fiber,matrix,sRt,sRc,' '))#id, name, fiber, matrix, Rt, Rc, note
     
     def DBsave(self):
-        database.insertMat()
-        msg.showwarning("Disabled", "This functionality hasn't been implemented yet")
+        name=self.name.get()
+        fiber=self.fiber.get().lower()
+        matrix=self.matrix.get()
+        sRt=int(self.sRt.get())
+        sRc=abs(int(self.sRc.get() ))
+        database.insertMat(database._name, name, fiber, matrix, sRc, sRt)
+        #msg.showwarning("Disabled", "This functionality hasn't been implemented yet")
         
 class groupChoosen(tk.Toplevel):
     """
