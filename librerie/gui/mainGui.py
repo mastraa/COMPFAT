@@ -266,7 +266,7 @@ class MainWindow(tk.Tk):
             self.pageChoosen['values']=pages
         except FileNotFoundError:
             string=time.strftime("%H:%M:%S")+": Nessun file caricato"
-            self.logError.insert(tk.INSERT,string+"\n")
+            self.logError.insert(tk.END,string+"\n")
             self.pageChoosen['values']=[]
             
             
@@ -295,7 +295,7 @@ class MainWindow(tk.Tk):
                 self.toPlotStory['values']=list(self.loadStored.keys()) #update toPlotStory Combobox
         except ValueError:
             string=time.strftime("%H:%M:%S")+" Error: fill all fields requested"
-        self.logError.insert(tk.INSERT,string+"\n")
+        self.logError.insert(tk.END,string+"\n")
              
         
     def saveStory(self):
@@ -307,7 +307,7 @@ class MainWindow(tk.Tk):
         for key in self.loadStored:
             self.loadStored[key].save('data/'+str(self.saveFile.get())+str(self.saveType.get()), key)
             string=time.strftime("%H:%M:%S")+" "+key+" strory saved to "+"data/"+str(self.saveFile.get())+str(self.saveType.get())
-            self.logError.insert(tk.INSERT,string+"\n")
+            self.logError.insert(tk.END,string+"\n")
     
     def delStory(self):
         key = self.st2Delete.get()
@@ -316,7 +316,7 @@ class MainWindow(tk.Tk):
         self.analStory['values']=list(self.loadStored.keys()) #update analStory Combobox
         self.toPlotStory['values']=list(self.loadStored.keys()) #update toPlotStory Combobox
         string=time.strftime("%H:%M:%S")+" "+key+" strory deleted"
-        self.logError.insert(tk.INSERT,string+"\n")
+        self.logError.insert(tk.END,string+"\n")
         
     def saveMat(self):
         """
@@ -327,7 +327,7 @@ class MainWindow(tk.Tk):
             self.matStored[values[1]]=analysis.matList(values[0], values[1], values[4], values[3], values[2],values[5])#id,name,sT,matrix type,fiber name,sC
             self.matSet['values']=list(self.matStored.keys())
             string=time.strftime("%H:%M:%S")+" "+values[1]+" material saved"
-            self.logError.insert(tk.INSERT,string+"\n")
+            self.logError.insert(tk.END,string+"\n")
     
     def searchMat(self):
         """
@@ -373,7 +373,7 @@ class MainWindow(tk.Tk):
             string=string+string_2
         except IndexError:
             string="ERROR: select press on Extract Group! \n Otherwise no group suites your request!"
-        self.logError.insert(tk.INSERT,time.strftime("%H:%M:%S")+" "+string+"\n")
+        self.logError.insert(tk.END,time.strftime("%H:%M:%S")+" "+string+"\n")
         
     def plotStory(self):
         """
