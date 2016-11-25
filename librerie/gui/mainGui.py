@@ -55,6 +55,8 @@ class MainWindow(tk.Tk):
         self.quitBtn.grid(column=5,row=0)
         self.readBtn=ttk.Button(master,text='ReadMe', command=self.openReadme)
         self.readBtn.grid(column=0,row=0)
+        
+        self.logError.insert(tk.END,time.strftime("%H:%M:%S")+" Load "+database._name+"\n")
           
         
         """ Load Setting Page """
@@ -141,7 +143,7 @@ class MainWindow(tk.Tk):
         mat=ttk.LabelFrame(p2,text="Material")
         mat.grid(column=0,row=0,sticky='W', padx=10, pady=10)
         
-        lista=database.searchField('matLib','fiber')
+        lista=database.searchField(database._name,'matLib','fiber')
         self.matChoosen = ttk.Combobox(mat, width=12, textvariable=self.material, state='readonly')
         self.matChoosen.grid(column=0, row=0)
         self.matChoosen['values']=lista
@@ -337,7 +339,7 @@ class MainWindow(tk.Tk):
         for i in self.tree.get_children():
             self.tree.delete(i)
         materiale=str(self.material.get())
-        for item in database.searchAll('matLib','fiber',materiale):
+        for item in database.searchAll(database._name,'matLib','fiber',materiale):
             self.tree.insert('','end',values=(item[0],item[1],item[2],item[3], item[4],item[5],item[6]))#id, name, fiber, matrix, Rt, Rc, note
             
     def extractGroup(self):
@@ -351,7 +353,7 @@ class MainWindow(tk.Tk):
         name=str(self.matAnal.get())
         fiber=str(self.matStored[name].fiber)
         matrix=str(self.matStored[name].matrix)
-        groups=database.searchAllGroups(fiber, matrix, beh, arch)
+        groups=database.searchAllGroups(database._name,fiber, matrix, beh, arch)
         self.dataList=[]
         for i in self.groupTree.get_children():
             self.groupTree.delete(i)

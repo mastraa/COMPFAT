@@ -7,8 +7,17 @@ Last release 17/11/2016
 
 import sqlite3
 
-
 _name = "fatData.db"
+try:
+    f=open('config.txt')
+    istr=f.readlines()
+    for item in istr:
+        if "DB" in item:
+            last = item.find(".db")
+            _name=item[3:last+3]
+except FileNotFoundError:
+    pass
+    
 
 def DBconnect(_name):
     connection = sqlite3.connect(_name)
@@ -19,11 +28,10 @@ def DBdisconnect(connection):
     connection.close()
     
 
-def searchField(table, field):
+def searchField(name, table, field):
     """
     return a list of all item in field column of table selcted
     """
-    name="fatData.db"
     connection, cursor = DBconnect(name)
     lista =[]
     cursor.execute('SELECT ({coi}) FROM {tn}'.\
@@ -37,20 +45,18 @@ def searchField(table, field):
     
     
     
-def searchAll(table, field, goal):
+def searchAll(name, table, field, goal):
     """
     Return a list of item of all column
     with the request characteristic in table
     """
-    name="fatData.db"
     connection, cursor = DBconnect(name)
     cursor.execute("SELECT * FROM "+table+" WHERE "+field+"=:Id",{"Id": goal})
     result = cursor.fetchall()
     DBdisconnect(connection)
     return result
     
-def searchAllGroups(fibre, matrix, beh, arch):
-    name="fatData.db"
+def searchAllGroups(name, fibre, matrix, beh, arch):
     connection, cursor = DBconnect(name)
     cursor.execute("SELECT * FROM matGroup WHERE fibre=? AND behav=? AND arch=? AND matrix=?",(fibre, beh, arch, matrix))
     result = cursor.fetchall()
