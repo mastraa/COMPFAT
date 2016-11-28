@@ -25,9 +25,10 @@ def configName(url, file, _name):
                 name=item[3:last+3]
                 if os.path.isfile(os.path.join(url, 'configFile/'+name)):
                     _name=os.path.join(url, 'configFile/'+name)
+                else:
+                    _name=os.path.join(url, 'configFile/'+_name)
         return _name
     except FileNotFoundError:
-        print("notFound")
         return os.path.join(url, 'configFile/'+_name)
 
 def DBconnect(_name):

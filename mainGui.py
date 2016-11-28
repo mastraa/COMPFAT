@@ -37,7 +37,6 @@ class MainWindow(tk.Tk):
         self.readme=os.path.join(url,"configFile/ReadMe.pdf")
         
         database._name=database.configName(url, 'config.txt', database._name)#database configuration
-        print(database._name)
         
         master = ttk.Frame(self, name='master') # create Frame in self
         master.pack(fill=tk.BOTH) # fill both sides of the parent
