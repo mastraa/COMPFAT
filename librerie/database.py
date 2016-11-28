@@ -11,23 +11,24 @@ _name = "fatData.db"
 
 
 
-def configName(file, _name):
+def configName(url, file, _name):
     """
     get DB name from config file
     """
+    
     try:
-        f=open(file)
+        f=open(os.path.join(url, file))
         istr=f.readlines()
         for item in istr:
             if "DB" in item:
                 last = item.find(".db")
                 name=item[3:last+3]
-                if os.path.isfile(name):
-                    _name=name
+                if os.path.isfile(os.path.join(url, 'configFile/'+name)):
+                    _name=os.path.join(url, 'configFile/'+name)
         return _name
     except FileNotFoundError:
         print("notFound")
-        return _name
+        return os.path.join(url, 'configFile/'+_name)
 
 def DBconnect(_name):
     connection = sqlite3.connect(_name)

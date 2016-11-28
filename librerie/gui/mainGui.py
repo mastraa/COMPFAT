@@ -34,9 +34,10 @@ class MainWindow(tk.Tk):
         self.loadStored={}
         self.matStored={}
         self.newMatWin, self.groupChoose=0,0
-        self.readme="ReadMe.pdf"
+        self.readme=os.path.join(url,"configFile/ReadMe.pdf")
         
-        database._name=database.configName(os.path.join(url, 'data/config.txt'), database._name)#database configuration
+        database._name=database.configName(url, 'config.txt', database._name)#database configuration
+        print(database._name)
         
         master = ttk.Frame(self, name='master') # create Frame in self
         master.pack(fill=tk.BOTH) # fill both sides of the parent
