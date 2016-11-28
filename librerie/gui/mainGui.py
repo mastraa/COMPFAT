@@ -416,7 +416,7 @@ class matWind(tk.Toplevel):
         self.geometry(size)#x,y
         self.resizable(0,0)
         self.parent=parent
-        self.iconbitmap='icon_2.ico'
+        self.iconbitmap=os.path.join(self.parent.url,'configFile/icon_2.ico')
         self.configure(background="gray89")
         
         self.name=tk.StringVar()
@@ -483,7 +483,7 @@ class groupChoosen(tk.Toplevel):
         self.parent=parent
         self.groups=[]
         self.dataList=self.parent.dataList
-        self.iconbitmap='icon_2.ico'
+        self.iconbitmap=os.path.join(self.parent.url,'configFile/icon_2.ico')
         self.configure(background="gray89")
         for child in self.parent.groupTree.get_children():
             self.groups.append(self.parent.groupTree.item(child)['values'])

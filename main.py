@@ -55,5 +55,5 @@ print(storia.ranges)
 
 
 radice=gui.MainWindow("COMPFAT","1000x700", application_path)#title, width_x_height
-radice.iconbitmap('icon.ico')
+radice.iconbitmap(os.path.join(application_path,'configFile/icon.ico'))
 radice.mainloop()
