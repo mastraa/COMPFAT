@@ -8,7 +8,7 @@ Andrea Mastrangelo
 Ing.Paolo Carraro
 Prof.Marino Quaresimin
 
-Last update: 17/11/2016 (general updates)
+Last update: 28/11/2016 (general updates)
 
 
 Previous release: BETA 0.0.1 - first release
@@ -54,6 +54,6 @@ print(storia.ranges)
 """
 
 
-radice=gui.MainWindow("COMPFAT","1000x700")#title, width_x_height
+radice=gui.MainWindow("COMPFAT","1000x700", application_path)#title, width_x_height
 radice.iconbitmap('icon.ico')
 radice.mainloop()

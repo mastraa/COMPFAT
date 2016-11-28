@@ -2,22 +2,32 @@
 """
 Author: Andrea Mastrangelo
 
-Last release 17/11/2016
+Last release 28/11/2016
 """
 
-import sqlite3
+import sqlite3, os
 
 _name = "fatData.db"
-try:
-    f=open('config.txt')
-    istr=f.readlines()
-    for item in istr:
-        if "DB" in item:
-            last = item.find(".db")
-            _name=item[3:last+3]
-except FileNotFoundError:
-    pass
-    
+
+
+
+def configName(file, _name):
+    """
+    get DB name from config file
+    """
+    try:
+        f=open(file)
+        istr=f.readlines()
+        for item in istr:
+            if "DB" in item:
+                last = item.find(".db")
+                name=item[3:last+3]
+                if os.path.isfile(name):
+                    _name=name
+        return _name
+    except FileNotFoundError:
+        print("notFound")
+        return _name
 
 def DBconnect(_name):
     connection = sqlite3.connect(_name)

@@ -6,7 +6,7 @@ Created on Tue Jul 26 13:58:33 2016
 
 python3 version
 
-Last update:   17/11/2016
+Last update:   28/11/2016
 """
 
 import tkinter as tk
@@ -25,7 +25,7 @@ from openpyxl import load_workbook
 class MainWindow(tk.Tk):
     """
     """
-    def __init__(self, title, size):
+    def __init__(self, title, size, url):
         tk.Tk.__init__(self)
         self.title(title)
         self.geometry(size)#x,y
@@ -35,6 +35,8 @@ class MainWindow(tk.Tk):
         self.matStored={}
         self.newMatWin, self.groupChoose=0,0
         self.readme="ReadMe.pdf"
+        
+        database._name=database.configName(os.path.join(url, 'data/config.txt'), database._name)#database configuration
         
         master = ttk.Frame(self, name='master') # create Frame in self
         master.pack(fill=tk.BOTH) # fill both sides of the parent
@@ -57,7 +59,6 @@ class MainWindow(tk.Tk):
         self.readBtn.grid(column=0,row=0)
         
         self.logError.insert(tk.END,time.strftime("%H:%M:%S")+" Load "+database._name+"\n")
-          
         
         """ Load Setting Page """
         #create and locate the frame
