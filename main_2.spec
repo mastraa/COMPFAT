@@ -6,6 +6,7 @@ block_cipher = None
 a = Analysis(['main.py'],
              pathex=['C:\\Users\\SuperUser\\Desktop\\CARTELLE PERSONALI\\Mastra\\tesi\\fatigue'],
              binaries=[],
+             datas=[('configFile,'configFile'),('data/config.txt','data'),('librerie/*.py','librerie')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
