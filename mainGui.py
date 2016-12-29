@@ -35,6 +35,7 @@ class MainWindow(tk.Tk):
         self.matStored={}
         self.newMatWin, self.groupChoose=0,0
         self.readme=os.path.join(url,"configFile/ReadMe.pdf")
+        self.url=url
         
         database._name=database.configName(url, 'config.txt', database._name)#database configuration
         
