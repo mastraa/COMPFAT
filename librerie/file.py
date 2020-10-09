@@ -17,15 +17,14 @@ def readXls(nameFile, sheet, column, header, limit=0):
     Read values from excel 2010 files column
     """
     a,result=[],[]
-    wb = load_workbook(filename = nameFile, read_only=True, data_only=True)
+    wb = load_workbook(filename = nameFile, read_only=False, data_only=True)
     #data_only to read current values of cells and not formulas
     sheet_ranges = wb[sheet]#worksheet
     
-
     """
     pay attention with the upgrade of openpyxl 2.4.0 ReadOnlyWS has no more column attribute
     """
-    f=sheet_ranges.columns[column-1]#the first cell with columns is 0-0
+    f=sheet_ranges[column]#the first cell with columns is 0-0
     for i in range (len(f)-header):
         a.append(f[i+header].value)
     if limit>0:

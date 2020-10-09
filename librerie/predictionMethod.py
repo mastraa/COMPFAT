@@ -88,12 +88,17 @@ def HaighPoints(sm, R, sext):
     """
     automatically detect the side of diagram
     return [sm,sa] of haigh diagram
-    sext=s estreme (max or min) calculated as sR*phi
+    sext=s estreme (max or min) calculated as sR*phi 
     """
     if sm>=0:
         _sm=sext/2*(1+R)
         _sa=sext/2*(1-R)
     else:
+        """era...secondo me errato...
         _sm=sext/2*(1+1/R)
         _sa=sext/2*(1/R-1)
+        """
+        _sa=sext/2
+        _sm=_sa*((1+R)/(1-R))
+        #print((1+R)/(1-R), _sm, _sa)
     return[_sm,_sa]

@@ -8,7 +8,7 @@ Analysis class library
 """
 
 import file#, database
-import countingMethod as cm
+import countingmethod as cm
 import predictionMethod as pm
 import database
 from math import log10
@@ -21,7 +21,7 @@ class loadStory:
     extreme = local max and min values of spectrum
     ranges = three dimension array : range, number of cycles, mean values
     """
-    def __init__(self, fileName, header, fileType='.xlsx', sheet='Carichi', column=1, limit=0):
+    def __init__(self, fileName, header, fileType='.xlsx', sheet='Carichi', column='A', limit=0):
         """
         """
         if fileType=='.xlsx':   
@@ -95,6 +95,10 @@ class loadStory:
         we search the respective index in Rlist. Rlist has all groups
         data, RlistTemp only R!!!
         
+        data is a list [R, phi50, phi90] for each group
+        _sRT Rm for tension case
+        _sRC Rm for compression case
+        
         """
         _sRT=int(_sRT)
         _sRC=int(_sRC)
@@ -102,11 +106,12 @@ class loadStory:
         self.D=0
         Rlist=[]
         p=0
-        for i in range(len(data)):
+        for i in range(len(data)):#create list of available R from data list
             if data[i][0]==99 or data[i][0]==-99:
                 data[i][0]=data[i][0]*10**10
-            Rlist.append(data[i][0])
+            Rlist.append(data[i][0]) 
         for item in self.block:#every amplitude
+            print (self.block)
             sa=item[0]/2#cycle amplitude from range
             for i in item[1]:#every mean for amplitude
                 RRight,RLeft=[],[]#divide R values for Haigh Curve
@@ -150,11 +155,12 @@ class loadStory:
                         pM50=pm.HaighPoints(sm, Rlist[x], sextM)#pM50=[_sm,sa]
                         
                         RlistOrd.reverse()
-                        x=Rlist.index(database.nextMin(R,RlistOrd))
+                        x=Rlist.index(database.nextMin(R,RlistOrd))#first lower value
                         sextm=data[x][1]*_sR  
-                        pm50=pm.HaighPoints(sm, Rlist[x], sextm)#pm50=[_sm,sa]                        
+                        pm50=pm.HaighPoints(sm, Rlist[x], sextm)#pm50=[_sm,sa] 
                         
                         smax2E650=pm.interpolationR(pm50,pM50,R)
+                        
                         if per == 50:
                             smax2E6=smax2E650
                         else:#repeat for 90! I need both to calculate delta 50-90 to get _sR90

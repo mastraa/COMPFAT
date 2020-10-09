@@ -285,7 +285,7 @@ class MainWindow(tk.Tk):
         except ValueError:#limit not inserted
             limit=0
         try:
-            newStory = analysis.loadStory(self.fileName, int(self.header.get()), fileType=str(self.fileType.get()), sheet=self.pageName.get(), column=int(self.column.get()), limit=limit)  
+            newStory = analysis.loadStory(self.fileName, int(self.header.get()), fileType=str(self.fileType.get()), sheet=self.pageName.get(), column=str(self.column.get()), limit=limit)  
             if newStory.Error:
                 string=newStory.errorsCheck(time.strftime("%H:%M:%S"))
             else:
