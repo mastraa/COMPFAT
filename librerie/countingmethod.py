@@ -82,7 +82,7 @@ def histoMean(s):
                 if flag:#if mean values yet to be add
                     item[1].append([value[1],round(value[2],4),value[3]])
     """for item in temp_v:
-        print (temp_v)"""#debug
+        print (item)"""#debug
     return temp_v
     
 def rearrangeMax(serie):

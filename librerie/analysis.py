@@ -107,22 +107,22 @@ class loadStory:
         Rlist=[]
         p=0
         for i in range(len(data)):#create list of available R from data list
-            if data[i][0]==99 or data[i][0]==-99:
+            if data[i][0]==99 or data[i][0]==-99:#on db 99 aproximate inf
                 data[i][0]=data[i][0]*10**10
             Rlist.append(data[i][0]) 
-        for item in self.block:#every amplitude
-            print (self.block)
+        RRight,RLeft=[],[]#divide R values for Haigh Curve
+        for r in Rlist:
+            if -1<r<1:
+                RRight.append(r)
+            elif r==-1:
+                RRight.append(r)
+                RLeft.append(r)
+            else:
+                RLeft.append(r)
+        for item in self.block:#every range
+            """self.block=[[range,[freq,sm,R],[]],[...]] """
             sa=item[0]/2#cycle amplitude from range
-            for i in item[1]:#every mean for amplitude
-                RRight,RLeft=[],[]#divide R values for Haigh Curve
-                for r in Rlist:
-                    if -1<r<1:
-                        RRight.append(r)
-                    elif r==-1:
-                        RRight.append(r)
-                        RLeft.append(r)
-                    else:
-                        RLeft.append(r)
+            for i in item[1]:#every R for range
                 p=p+1
                 N=i[0]#number of applied cycle fo that load
                 sm=i[1]#cycle median                
@@ -138,7 +138,7 @@ class loadStory:
                     _sR=_sRC#considered as compression
                     sApp=sm-sa#s_min
                 try:
-                    x=Rlist.index(R)#if we have the group with same R
+                    x=Rlist.index(R)#search group with same R
                     smax2E6=data[x][1]*_sR
                     if per==90:
                         smax2E650=smax2E6#50%
@@ -157,7 +157,7 @@ class loadStory:
                         RlistOrd.reverse()
                         x=Rlist.index(database.nextMin(R,RlistOrd))#first lower value
                         sextm=data[x][1]*_sR  
-                        pm50=pm.HaighPoints(sm, Rlist[x], sextm)#pm50=[_sm,sa] 
+                        pm50=pm.HaighPoints(sm, Rlist[x], sextm)#pm50=[_sm,sa]
                         
                         smax2E650=pm.interpolationR(pm50,pM50,R)
                         
